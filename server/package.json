@@ -1,0 +1,23 @@
+{
+  "name": "explore-jyvaskyla-server",
+  "version": "0.1.0",
+  "description": "Backend for Explore Jyvaskyla Android app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zakemi/Explore-Jyvaskyla.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zakemi/Explore-Jyvaskyla/issues"
+  },
+  "homepage": "https://github.com/Zakemi/Explore-Jyvaskyla#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mysql": "^2.11.1"
+  }
+}
