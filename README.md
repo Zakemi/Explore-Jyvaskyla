@@ -1,1 +1,1 @@
-"# Explore Jyvaskyla" 
+# Explore Jyvaskyla
