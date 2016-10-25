@@ -20,11 +20,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ServerConnection.GetJSONData {
 
     private GoogleMap mMap;
     private Marker userMarker;
-    private InterestingPlaces interestingPlaces;
+    private ArrayList<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
     private SQLiteDatabase db;
 
@@ -103,19 +109,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Get the interesting places from the server and put markers on the map.
      */
     public void getInterestingPlaces(){
-        interestingPlaces = new InterestingPlaces();
-        for (int i=0; i<interestingPlaces.getInterestingPlaces().size(); i++){
+        interestingPlaces = new ArrayList<InterestingPlace>();
+        /*for (int i=0; i<interestingPlaces.size(); i++){
             mMap.addMarker(new MarkerOptions()
-                    .position(interestingPlaces.getInterestingPlaces().get(i).getPosition())
-                    .title(interestingPlaces.getInterestingPlaces().get(i).getName())
+                    .position(interestingPlaces.get(i).getPosition())
+                    .title(interestingPlaces.get(i).getName())
             );
-        }
+        }*/
+        new ServerConnection(this).execute();
     }
 
     public void checkNearPlaces(){
         if (interestingPlaces != null){
-            for (int i=0; i<interestingPlaces.getInterestingPlaces().size(); i++){
-                InterestingPlaces.Place place = interestingPlaces.getInterestingPlaces().get(i);
+            for (int i=0; i<interestingPlaces.size(); i++){
+                InterestingPlace place = interestingPlaces.get(i);
                 if (getDistance(userMarker.getPosition().latitude, place.getPosition().latitude) < epsilonLatLng
                         && getDistance(userMarker.getPosition().longitude, place.getPosition().longitude) < epsilonLatLng){
                     if (isPlaceVisitedAlready(place)){
@@ -134,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return Math.abs(param1 - param2);
     }
 
-    public void addVisitedPlaceToDatabase(InterestingPlaces.Place place){
+    public void addVisitedPlaceToDatabase(InterestingPlace place){
         ContentValues contentValues = new ContentValues();
         contentValues.put("_id", place.getId());
         contentValues.put(DatabaseHelper.VPT_NAME, place.getName());
@@ -143,7 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         db.insert(DatabaseHelper.VISITED_PLACES_TABLE, null, contentValues);
     }
 
-    public boolean isPlaceVisitedAlready(InterestingPlaces.Place place){
+    public boolean isPlaceVisitedAlready(InterestingPlace place){
         Cursor cursor = db.rawQuery("SELECT _id from " + DatabaseHelper.VISITED_PLACES_TABLE
                 + " WHERE _id LIKE " + place.getId(), null);
         if (cursor.getCount() == 0){
@@ -151,6 +158,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         else {
             return true;
+        }
+    }
+
+    @Override
+    public void onRemoteCallComplete(String jsonString) {
+        System.out.println(jsonString);
+        interestingPlaces = new ArrayList<InterestingPlace>();
+        try {
+            JSONArray jsonArray = new JSONArray(jsonString);
+            for (int i=0; i<jsonArray.length(); i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                int id = jsonObject.getInt("ID");
+                double lat = jsonObject.getDouble("Latitude");
+                double lng = jsonObject.getDouble("Longitude");
+                String name = jsonObject.getString("Name");
+                String type = jsonObject.getString("Type");
+                InterestingPlace place = new InterestingPlace(id, name, lat, lng, type);
+                interestingPlaces.add(place);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Received places : " + interestingPlaces.size());
+        for (int i=0; i<interestingPlaces.size(); i++){
+            mMap.addMarker(new MarkerOptions()
+                    .position(interestingPlaces.get(i).getPosition())
+                    .title(interestingPlaces.get(i).getName())
+            );
         }
     }
 }
