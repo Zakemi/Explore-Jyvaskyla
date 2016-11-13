@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Explore Jyvaskyla Android</string>
     <string name="title_activity_maps">Map</string>
+    <string-array name="types_array">
+        <item>Select one…</item>
+        <item>museum</item>
+        <item>other</item>
+    </string-array>
 </resources>

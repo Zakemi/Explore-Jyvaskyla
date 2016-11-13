@@ -1,6 +1,7 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
@@ -9,6 +10,7 @@ import android.location.LocationManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -163,7 +165,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRemoteCallComplete(String jsonString) {
-        System.out.println(jsonString);
         interestingPlaces = new ArrayList<InterestingPlace>();
         try {
             JSONArray jsonArray = new JSONArray(jsonString);
@@ -179,6 +180,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println("No JSON string");
+            e.printStackTrace();
         }
         System.out.println("Received places : " + interestingPlaces.size());
         for (int i=0; i<interestingPlaces.size(); i++){
@@ -187,5 +191,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(interestingPlaces.get(i).getName())
             );
         }
+    }
+
+    public void addPlace(View view){
+        Intent intent = new Intent(this, AddPlaceActivity.class);
+        startActivity(intent);
     }
 }

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_add_place"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="fi.jamk.hunteam.explorejyvaskylaandroid.AddPlaceActivity">
+
+    <TextView
+        android:text="Use the Google Maps to pick a place, the coordinates. Or fill the fields below. Fields with * are required."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:id="@+id/activity_description"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="Name*"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_name"
+        android:layout_alignBaseline="@+id/add_place_name"
+        android:layout_alignBottom="@+id/add_place_name"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Address*"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_address"
+        android:layout_alignBaseline="@+id/add_place_address"
+        android:layout_alignBottom="@+id/add_place_address"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/add_place_lat"
+        android:layout_below="@+id/add_place_address"
+        android:layout_toEndOf="@+id/text_lng" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPostalAddress"
+        android:ems="10"
+        android:id="@+id/add_place_address"
+        android:layout_below="@+id/add_place_name"
+        android:layout_alignStart="@+id/add_place_lat" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/add_place_name"
+        android:layout_below="@+id/button3"
+        android:layout_alignStart="@+id/add_place_address" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/add_place_lng"
+        android:layout_alignBaseline="@+id/text_lng"
+        android:layout_alignBottom="@+id/text_lng"
+        android:layout_toEndOf="@+id/text_lng" />
+
+    <TextView
+        android:text="Lattitude*"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_lat"
+        android:layout_alignBaseline="@+id/add_place_lat"
+        android:layout_alignBottom="@+id/add_place_lat"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Longitude*"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:id="@+id/text_lng"
+        android:layout_below="@+id/add_place_lat"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Pick place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button3"
+        android:onClick="pickPlace"
+        android:layout_below="@+id/activity_description"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/common_google_signin_btn_text_light_normal" />
+
+    <TextView
+        android:text="Phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_phone"
+        android:layout_alignBaseline="@+id/add_place_phone"
+        android:layout_alignBottom="@+id/add_place_phone"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/add_place_web"
+        android:inputType="textUri"
+        android:layout_below="@+id/add_place_phone"
+        android:layout_alignStart="@+id/add_place_lng" />
+
+    <TextView
+        android:text="Website"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_web"
+        android:layout_alignBaseline="@+id/add_place_web"
+        android:layout_alignBottom="@+id/add_place_web"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Add place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button4"
+        android:layout_below="@+id/add_place_web"
+        android:layout_alignParentEnd="true"
+        android:onClick="addPlace" />
+
+
+    <TextView
+        android:text="Type*"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_type"
+        android:layout_alignBaseline="@+id/add_place_type"
+        android:layout_alignBottom="@+id/add_place_type"
+        android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_place_type"
+        android:layout_below="@+id/add_place_lng"
+        android:layout_alignStart="@+id/add_place_phone" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/add_place_phone"
+        android:layout_below="@+id/add_place_other_type"
+        android:layout_alignStart="@+id/add_place_web" />
+
+    <TextView
+        android:text="Please specity the type*"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_other_type"
+        android:layout_below="@+id/text_type"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="26dp"
+        android:visibility="gone" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/add_place_other_type"
+        android:layout_below="@+id/text_other_type"
+        android:layout_toEndOf="@+id/text_address"
+        android:visibility="gone" />
+
+
+</RelativeLayout>
