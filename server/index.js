@@ -12,6 +12,19 @@ var sql = mysql.createPool({
 
 var PORT = 3000;
 
+// Simple validation mechanism
+// data must have all members that scheme has
+// embedded objects or arrays are not supported!
+function json_validate(scheme, data) {
+    for(var x in scheme)
+        if(data[x] == undefined) {
+            console.log('Validation fail! Missing', x);
+            return false;
+        }
+
+    return true;
+}
+
 app.get('/locations', function(req, res) {
     sql.query('SELECT * FROM locations', function(err, rows, fields) {
         if(err) {
@@ -28,17 +41,56 @@ app.get('/locations', function(req, res) {
 app.post('/locations', function(req, res) {
     var body = [];
 
+    // Receive data chunk by chunk
     req.on('error', function(err) {
         console.log(err);
     }).on('data', function(chunk) {
         body.push(chunk);
     }).on('end', function() {
         body = Buffer.concat(body).toString();
-
+        req.emit('buffer-complete');
+    }).on('buffer-complete', function() {
         // Handle request
-        json = JSON.parse(body);
-        res.send(JSON.stringify(json));
-        console.log(json);
+        var scheme = {
+            Latitude: 'double',
+            Longitude: 'double',
+            Name: 'string',
+            Type: 'string'
+        };
+
+        body = JSON.parse(body);
+        var response = {};
+
+        // Validate req body
+        // ( i.e. see if it has all the required fields )
+        if(!json_validate(scheme, body)) {
+            res.statusCode = 400;
+            response = {
+                success: false,
+                error: 'bad-json'
+            }
+
+            res.send(JSON.stringify(response));
+            return;
+        }
+
+        // Save location 
+        sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type) ' +
+                 'VALUES (?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type],
+             function(err, results) {
+                 if(err) {
+                     response = {
+                         success: false,
+                         error: 'query-fail'
+                     };
+                 } else {
+                     response = {
+                         success: true
+                     };
+                 }
+
+                 res.send(JSON.stringify(response));
+             });
     });
 });
 
