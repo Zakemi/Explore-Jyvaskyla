@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -18,9 +19,15 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceTypes;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 public class AddPlaceActivity extends AppCompatActivity {
 
     static final int PLACE_PICK_REQUEST = 1;
+    static OwnPlaceTypes placeTypes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,27 +35,12 @@ public class AddPlaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_place);
 
         Spinner spinner = (Spinner) findViewById(R.id.add_place_type);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.types_array, R.layout.support_simple_spinner_dropdown_item);
+        placeTypes = new OwnPlaceTypes();
+        List<String> types = placeTypes.array;
+        types.add(0, getString(R.string.please_select));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (this, R.layout.support_simple_spinner_dropdown_item, types);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] typesArray = getResources().getStringArray(R.array.types_array);
-                if (typesArray[position].equals("other")){
-                    findViewById(R.id.text_other_type).setVisibility(View.VISIBLE);
-                    findViewById(R.id.add_place_other_type).setVisibility(View.VISIBLE);
-                } else {
-                    findViewById(R.id.text_other_type).setVisibility(View.GONE);
-                    findViewById(R.id.add_place_other_type).setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         spinner.setAdapter(adapter);
     }
 
@@ -76,7 +68,10 @@ public class AddPlaceActivity extends AppCompatActivity {
                 if (place.getWebsiteUri() != null)
                     ((EditText) findViewById(R.id.add_place_web)).setText(place.getWebsiteUri().toString());
                 if (place.getPlaceTypes().size() > 0){
-                    //todo, maybe select the correct type from the spinner? or leave to the user
+                    Spinner spinner = (Spinner) findViewById(R.id.add_place_type);
+                    ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
+                    int position = adapter.getPosition(placeTypes.dict.get(place.getPlaceTypes().get(0)));
+                    spinner.setSelection(position);
                 }
             }
         }
@@ -95,10 +90,6 @@ public class AddPlaceActivity extends AppCompatActivity {
             return false;
         } else if (((Spinner) findViewById(R.id.add_place_type)).getSelectedItemPosition() == 0){
             return false;
-        } else if (((Spinner) findViewById(R.id.add_place_type)).getSelectedItem().toString().equals("other")){
-            if (((EditText) findViewById(R.id.add_place_other_type)).getText().toString().equals("")){
-                return false;
-            }
         }
         return true;
     }

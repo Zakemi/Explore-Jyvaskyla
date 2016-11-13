@@ -13,12 +13,13 @@
     android:layout_height="match_parent"
     tools:context="fi.jamk.hunteam.explorejyvaskylaandroid.MapsActivity" />
 
-    <Button
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button2"
+        android:background="@drawable/add_place"
+        android:onClick="addPlace"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="addPlace"/>
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

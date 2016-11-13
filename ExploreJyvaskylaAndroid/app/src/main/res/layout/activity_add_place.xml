@@ -101,15 +101,6 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/common_google_signin_btn_text_light_normal" />
 
-    <TextView
-        android:text="Phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/text_phone"
-        android:layout_alignBaseline="@+id/add_place_phone"
-        android:layout_alignBottom="@+id/add_place_phone"
-        android:layout_alignParentStart="true" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -160,28 +151,17 @@
         android:inputType="phone"
         android:ems="10"
         android:id="@+id/add_place_phone"
-        android:layout_below="@+id/add_place_other_type"
+        android:layout_below="@+id/add_place_type"
         android:layout_alignStart="@+id/add_place_web" />
 
     <TextView
-        android:text="Please specity the type*"
+        android:text="Phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text_other_type"
-        android:layout_below="@+id/text_type"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="26dp"
-        android:visibility="gone" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/add_place_other_type"
-        android:layout_below="@+id/text_other_type"
-        android:layout_toEndOf="@+id/text_address"
-        android:visibility="gone" />
+        android:id="@+id/text_phone"
+        android:layout_alignBaseline="@+id/add_place_phone"
+        android:layout_alignBottom="@+id/add_place_phone"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
