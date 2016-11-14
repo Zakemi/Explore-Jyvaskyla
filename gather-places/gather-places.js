@@ -3,17 +3,12 @@ var https = require('https');
 
 const API_KEY = "AIzaSyDd3X275fD1ZBotmfU52iDTPSmfAjaZO9M";
 
-// Middle of Jyvaskyla ( according to Google Maps )
-var Latitude = 62.1367014;
-var Longitude = 25.0954831;
-var Range = 2500;
-
 //=============================================================================================
 // Assemble request URL
 var urlBase = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
 var urlOptions = {
-    location: [Latitude, Longitude].join(','),
-    radius: Range,
+    location: [62.1367014, 25.0954831].join(','),
+    radius: 2500,
     key: API_KEY
 }
 
@@ -60,5 +55,23 @@ https.get(url, function(res) {
     });
 }).on('done', (data) => {
     console.log('Request complete');
-    console.log(JSON.stringify(data, undefined, 4));
+
+    var results = data.results;
+    var places = [];
+    for(var i = 0; i < results.length; i+=1) {
+        let place = results[i];
+
+        places.push({
+            Name: place.name,
+            Latitude: place.geometry.location.lat,
+            Longitude: place.geometry.location.lng,
+            Type: place.types[0]
+        });
+    }
+
+    // Output places for debug
+    for(var i = 0; i < places.length; i+=1) {
+        let place = places[i];
+        console.log('\t', place.Name, '@', place.Latitude, place.Longitude, '-', place.Type);
+    }
 });
