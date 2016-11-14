@@ -58,7 +58,18 @@ app.post('/locations', function(req, res) {
             Type: 'string'
         };
 
-        body = JSON.parse(body);
+        try {
+            body = JSON.parse(body);
+        }
+        catch(e) {
+            console.log('Failed parsing JSON: ');
+            console.log(e.message);
+            res.send(JSON.stringify({
+                success: false,
+                error: 'malformed-json'
+            }));
+        }
+        
         var response = {};
 
         // Validate req body
@@ -74,7 +85,7 @@ app.post('/locations', function(req, res) {
             return;
         }
 
-        // Save location 
+        // Save location
         sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type) ' +
                  'VALUES (?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type],
              function(err, results) {

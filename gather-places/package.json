@@ -1,0 +1,19 @@
+{
+  "name": "gather-places",
+  "version": "1.0.0",
+  "description": "Gather places around an area from the Google Maps API",
+  "main": "gather-places.js",
+  "scripts": {
+    "test": "node gather-places.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zakemi/Explore-Jyvaskyla.git"
+  },
+  "author": "elementbound",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zakemi/Explore-Jyvaskyla/issues"
+  },
+  "homepage": "https://github.com/Zakemi/Explore-Jyvaskyla#readme"
+}
