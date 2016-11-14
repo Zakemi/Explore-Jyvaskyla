@@ -60,6 +60,7 @@ public class AddPlaceActivity extends AppCompatActivity {
         if (requestCode == PLACE_PICK_REQUEST){
             if (resultCode == RESULT_OK){
                 Place place = PlacePicker.getPlace(data, this);
+                ((EditText) findViewById(R.id.add_place_id)).setText(place.getId());
                 ((EditText) findViewById(R.id.add_place_name)).setText(place.getName());
                 ((EditText) findViewById(R.id.add_place_address)).setText(place.getAddress());
                 ((EditText) findViewById(R.id.add_place_lat)).setText((String.valueOf(place.getLatLng().latitude)));
@@ -96,7 +97,15 @@ public class AddPlaceActivity extends AppCompatActivity {
 
     public void addPlace(View view){
         if (validateFields()){
-            //todo send data to server
+            String id = ((EditText) findViewById(R.id.add_place_id)).getText().toString();
+            String name = ((EditText) findViewById(R.id.add_place_name)).getText().toString();
+            String address = ((EditText) findViewById(R.id.add_place_address)).getText().toString();
+            String lat = ((EditText) findViewById(R.id.add_place_lat)).getText().toString();
+            String lng = ((EditText) findViewById(R.id.add_place_lng)).getText().toString();
+            String type = ((Spinner) findViewById(R.id.add_place_type)).getSelectedItem().toString();
+            String phone = ((EditText) findViewById(R.id.add_place_phone)).getText().toString();
+            String web = ((EditText) findViewById(R.id.add_place_web)).getText().toString();
+            new ServerConnections.PostPlaceToServer().execute(id, name, address, lat, lng, type, phone, web);
             Toast.makeText(this, "Thanks for the new place!", Toast.LENGTH_LONG).show();
             finish();
         }
