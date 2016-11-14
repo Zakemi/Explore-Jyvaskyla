@@ -28,13 +28,16 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ServerConnection.GetJSONData {
+import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GetPlacesFromServer.GetPlacesCallBack {
 
     private GoogleMap mMap;
     private Marker userMarker;
     private ArrayList<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
     private SQLiteDatabase db;
+    private final int ADD_PLACE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         db = (new DatabaseHelper(this)).getWritableDatabase();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("RESUMED");
+    }
 
     /**
      * Manipulates the map once available.
@@ -118,7 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(interestingPlaces.get(i).getName())
             );
         }*/
-        new ServerConnection(this).execute();
+        new GetPlacesFromServer(this).execute();
     }
 
     public void checkNearPlaces(){
@@ -195,6 +203,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void addPlace(View view){
         Intent intent = new Intent(this, AddPlaceActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, ADD_PLACE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case ADD_PLACE_REQUEST_CODE: {
+                if (resultCode == RESULT_OK){
+                    mMap.clear();
+                    getInterestingPlaces();
+                    getUserLocation();
+                }
+                break;
+            }
+        }
     }
 }

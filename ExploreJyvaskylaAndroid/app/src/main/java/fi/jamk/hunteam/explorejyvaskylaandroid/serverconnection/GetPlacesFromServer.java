@@ -1,4 +1,4 @@
-package fi.jamk.hunteam.explorejyvaskylaandroid;
+package fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection;
 
 import android.os.AsyncTask;
 
@@ -9,22 +9,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
-/**
- * Created by DoubleD on 2016. 10. 21..
- */
+public class GetPlacesFromServer extends AsyncTask<Void, Void, String> {
 
-public class ServerConnection extends AsyncTask<Void, Void, String>{
-
-    private GetJSONData getJSONData;
-
-    public ServerConnection(GetJSONData getJSONData){
-        this.getJSONData = getJSONData;
-    };
-
-    public interface GetJSONData {
+    public interface GetPlacesCallBack{
         public void onRemoteCallComplete(String json);
+    }
+
+    private GetPlacesCallBack getPlacesCallBack;
+
+    public GetPlacesFromServer(GetPlacesCallBack getPlacesCallBack){
+        this.getPlacesCallBack = getPlacesCallBack;
     }
 
     @Override
@@ -45,8 +40,7 @@ public class ServerConnection extends AsyncTask<Void, Void, String>{
                 buffer.append(line).append("\n");
                 line = buff.readLine();
             }
-            String response = buffer.toString();
-            return response;
+            return buffer.toString();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -58,6 +52,6 @@ public class ServerConnection extends AsyncTask<Void, Void, String>{
 
     @Override
     protected void onPostExecute(String s) {
-        getJSONData.onRemoteCallComplete(s);
+        getPlacesCallBack.onRemoteCallComplete(s);
     }
 }
