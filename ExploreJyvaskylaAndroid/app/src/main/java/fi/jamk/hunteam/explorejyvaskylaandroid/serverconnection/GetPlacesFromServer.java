@@ -28,7 +28,7 @@ public class GetPlacesFromServer extends AsyncTask<Void, Void, String> {
         HttpURLConnection httpURLConnection = null;
         try {
             StringBuffer buffer = new StringBuffer();
-            url = new URL("http://192.168.1.34:3000/locations");
+            url = new URL("http://130.234.200.164:3000/locations");
             httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.connect();

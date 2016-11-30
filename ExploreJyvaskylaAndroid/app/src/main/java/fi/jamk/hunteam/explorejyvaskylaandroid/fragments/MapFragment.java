@@ -1,23 +1,34 @@
-package fi.jamk.hunteam.explorejyvaskylaandroid;
+package fi.jamk.hunteam.explorejyvaskylaandroid.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.provider.ContactsContract;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -28,49 +39,55 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import fi.jamk.hunteam.explorejyvaskylaandroid.AddPlaceActivity;
+import fi.jamk.hunteam.explorejyvaskylaandroid.DatabaseHelper;
+import fi.jamk.hunteam.explorejyvaskylaandroid.InterestingPlace;
+import fi.jamk.hunteam.explorejyvaskylaandroid.R;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GetPlacesFromServer.GetPlacesCallBack {
 
-    private GoogleMap mMap;
+public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack {
+
+    Context context;
+    MapView mMapView;
+    private GoogleMap googleMap;
     private Marker userMarker;
     private ArrayList<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
     private SQLiteDatabase db;
-    private final int ADD_PLACE_REQUEST_CODE = 1;
 
+    public MapFragment(){}
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        db = (new DatabaseHelper(this)).getWritableDatabase();
-    }
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        System.out.println("RESUMED");
-    }
+        context = getActivity().getApplicationContext();
+        db = (new DatabaseHelper(context)).getWritableDatabase();
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        View rootView = inflater.inflate(R.layout.activity_maps, container, false);
+        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume();
 
-        getInterestingPlaces();
-        getUserLocation();
+        try {
+            MapsInitializer.initialize(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                googleMap = mMap;
+                getInterestingPlaces();
+                getUserLocation();
+            }
+        });
+
+        return rootView;
     }
 
     /**
@@ -78,14 +95,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @throws SecurityException Need permission from the user
      */
     public void getUserLocation() throws SecurityException{
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
                 if (userMarker == null) {
-                    userMarker = mMap.addMarker(new MarkerOptions()
+                    userMarker = googleMap.addMarker(new MarkerOptions()
                             .position(userLocation)
                             .title("You are here")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.user))
@@ -94,7 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 else {
                     userMarker.setPosition(userLocation);
                 }
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14.0f));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14.0f));
                 /* Check is there any unvisited place in the near. */
                 checkNearPlaces();
             }
@@ -136,11 +153,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (getDistance(userMarker.getPosition().latitude, place.getPosition().latitude) < epsilonLatLng
                         && getDistance(userMarker.getPosition().longitude, place.getPosition().longitude) < epsilonLatLng){
                     if (isPlaceVisitedAlready(place)){
-                        Toast.makeText(getApplicationContext(), "Already visited: " + place.getName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Already visited: " + place.getName(), Toast.LENGTH_LONG).show();
                     }
                     else {
                         addVisitedPlaceToDatabase(place);
-                        Toast.makeText(getApplicationContext(), "Add to db: " + place.getName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Add to db: " + place.getName(), Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -194,30 +211,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         System.out.println("Received places : " + interestingPlaces.size());
         for (int i=0; i<interestingPlaces.size(); i++){
-            mMap.addMarker(new MarkerOptions()
+            googleMap.addMarker(new MarkerOptions()
                     .position(interestingPlaces.get(i).getPosition())
                     .title(interestingPlaces.get(i).getName())
             );
         }
     }
 
-    public void addPlace(View view){
-        Intent intent = new Intent(this, AddPlaceActivity.class);
-        startActivityForResult(intent, ADD_PLACE_REQUEST_CODE);
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case ADD_PLACE_REQUEST_CODE: {
-                if (resultCode == RESULT_OK){
-                    mMap.clear();
-                    getInterestingPlaces();
-                    getUserLocation();
-                }
-                break;
-            }
-        }
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 }

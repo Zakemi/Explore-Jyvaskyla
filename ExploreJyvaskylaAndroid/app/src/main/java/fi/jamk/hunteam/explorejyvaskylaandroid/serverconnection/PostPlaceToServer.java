@@ -30,7 +30,7 @@ public class PostPlaceToServer extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         String result = "";
         try {
-            URL url = new URL("http://192.168.1.34:3000/locations");
+            URL url = new URL("http://130.234.200.164:3000/locations");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
