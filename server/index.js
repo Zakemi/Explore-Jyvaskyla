@@ -86,8 +86,8 @@ app.post('/locations', function(req, res) {
         }
 
         // Save location
-        sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type) ' +
-                 'VALUES (?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type],
+        sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type, Address, Phone, Web, GoogleID) ' +
+                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type, body.Address, body.Phone, body.Web, body.GoogleID],
              function(err, results) {
                  if(err) {
                      response = {

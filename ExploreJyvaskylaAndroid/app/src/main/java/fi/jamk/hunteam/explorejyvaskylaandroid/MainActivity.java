@@ -44,12 +44,12 @@ public class MainActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        System.out.println(mSectionsPagerAdapter);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        System.out.println(mViewPager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        mViewPager.setCurrentItem(1);
     }
 
     /**
@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Fragment will be null");
             return null;
         }
+
+
 
         @Override
         public int getCount() {

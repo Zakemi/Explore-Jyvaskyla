@@ -13,6 +13,8 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
 
     public void pickPlace(View view){
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        builder.setLatLngBounds(new LatLngBounds.Builder().include(new LatLng(62.2401672,25.7484592)).build());
         try {
             startActivityForResult(builder.build(this), PLACE_PICK_REQUEST);
         } catch (GooglePlayServicesRepairableException e) {

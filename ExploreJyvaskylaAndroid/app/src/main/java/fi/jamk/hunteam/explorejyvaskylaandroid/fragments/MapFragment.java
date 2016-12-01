@@ -38,11 +38,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fi.jamk.hunteam.explorejyvaskylaandroid.AddPlaceActivity;
 import fi.jamk.hunteam.explorejyvaskylaandroid.DatabaseHelper;
 import fi.jamk.hunteam.explorejyvaskylaandroid.InterestingPlace;
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
+import fi.jamk.hunteam.explorejyvaskylaandroid.database.Locations;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
 
 
@@ -52,9 +54,11 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     MapView mMapView;
     private GoogleMap googleMap;
     private Marker userMarker;
-    private ArrayList<InterestingPlace> interestingPlaces;
+    private List<Marker> placeMarkers;
+    private List<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
     private SQLiteDatabase db;
+    private Locations locationsDatabase;
 
     public MapFragment(){}
 
@@ -136,13 +140,15 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
      * Get the interesting places from the server and put markers on the map.
      */
     public void getInterestingPlaces(){
-        interestingPlaces = new ArrayList<InterestingPlace>();
-        /*for (int i=0; i<interestingPlaces.size(); i++){
-            mMap.addMarker(new MarkerOptions()
-                    .position(interestingPlaces.get(i).getPosition())
-                    .title(interestingPlaces.get(i).getName())
-            );
-        }*/
+        // Get places from database
+        locationsDatabase = new Locations(context);
+        interestingPlaces = locationsDatabase.getPlaces();
+        System.out.println(interestingPlaces.size());
+        // Add place markers on the map
+        addPlaceMarkers();
+        System.out.println(placeMarkers.size());
+
+        // Try to fresh the places from the server
         new GetPlacesFromServer(this).execute();
     }
 
@@ -200,7 +206,10 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 double lng = jsonObject.getDouble("Longitude");
                 String name = jsonObject.getString("Name");
                 String type = jsonObject.getString("Type");
-                InterestingPlace place = new InterestingPlace(id, name, lat, lng, type);
+                String address = jsonObject.getString("Address");
+                String phone = jsonObject.getString("Phone");
+                String web = jsonObject.getString("Web");
+                InterestingPlace place = new InterestingPlace(id, name, lat, lng, type, address, phone, web);
                 interestingPlaces.add(place);
             }
         } catch (JSONException e) {
@@ -210,12 +219,27 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             e.printStackTrace();
         }
         System.out.println("Received places : " + interestingPlaces.size());
+        // Save places to the database
+        new Locations(context).addPlaces(interestingPlaces);
+        // Add place markers to the map
+        addPlaceMarkers();
+    }
+
+    private void addPlaceMarkers(){
+        if (placeMarkers != null) {
+            for (int i = 0; i < placeMarkers.size(); i++) {
+                placeMarkers.get(i).remove();
+            }
+            placeMarkers = null;
+        }
+        placeMarkers = new ArrayList<>();
         for (int i=0; i<interestingPlaces.size(); i++){
-            googleMap.addMarker(new MarkerOptions()
+            placeMarkers.add(googleMap.addMarker(new MarkerOptions()
                     .position(interestingPlaces.get(i).getPosition())
                     .title(interestingPlaces.get(i).getName())
-            );
+            ));
         }
+
     }
 
     @Override
