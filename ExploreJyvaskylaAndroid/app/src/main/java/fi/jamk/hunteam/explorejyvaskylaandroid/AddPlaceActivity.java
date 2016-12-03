@@ -18,12 +18,13 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.List;
 
+import fi.jamk.hunteam.explorejyvaskylaandroid.model.Categories;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.PostPlaceToServer;
 
 public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToServer.PostPlaceCallBack {
 
     static final int PLACE_PICK_REQUEST = 1;
-    static OwnPlaceTypes placeTypes;
+    static Categories categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +32,11 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
         setContentView(R.layout.activity_add_place);
 
         Spinner spinner = (Spinner) findViewById(R.id.add_place_type);
-        placeTypes = new OwnPlaceTypes();
-        List<String> types = placeTypes.array;
-        types.add(0, getString(R.string.please_select));
+        categories = new Categories();
+        List<String> categoriesList = categories.getCategoryNames();
+        categoriesList.add(0, getString(R.string.please_select));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this, R.layout.support_simple_spinner_dropdown_item, types);
+                (this, R.layout.support_simple_spinner_dropdown_item, categoriesList);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -65,12 +66,12 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
                 ((EditText) findViewById(R.id.add_place_phone)).setText(place.getPhoneNumber());
                 if (place.getWebsiteUri() != null)
                     ((EditText) findViewById(R.id.add_place_web)).setText(place.getWebsiteUri().toString());
-                if (place.getPlaceTypes().size() > 0){
+                /*if (place.getPlaceTypes().size() > 0){
                     Spinner spinner = (Spinner) findViewById(R.id.add_place_type);
                     ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
                     int position = adapter.getPosition(placeTypes.dict.get(place.getPlaceTypes().get(0)));
                     spinner.setSelection(position);
-                }
+                }*/
             }
         }
     }

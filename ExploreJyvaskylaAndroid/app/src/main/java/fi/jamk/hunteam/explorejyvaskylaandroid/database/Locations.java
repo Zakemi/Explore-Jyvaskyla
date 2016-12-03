@@ -99,4 +99,35 @@ public class Locations extends SQLiteOpenHelper{
         return places;
     }
 
+    public List<InterestingPlace> getPlacesInCategories(List<String> categories){
+        List<InterestingPlace> places = new ArrayList<>();
+        if (categories.size() == 0){
+            return places;
+        }
+        String whereClause = TYPE + " = ?";
+        for (int i=1; i<categories.size(); i++){
+            whereClause += " OR " + TYPE + " = ?";
+        }
+        System.out.println(categories.size() + " : " + whereClause);
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE, null, whereClause, categories.toArray(new String[0]), null, null, null);
+
+        cursor.moveToFirst();
+        for (int i=0; i<cursor.getCount(); i++){
+            InterestingPlace place = new InterestingPlace(
+                    cursor.getInt(cursor.getColumnIndex(ID)),
+                    cursor.getString(cursor.getColumnIndex(NAME)),
+                    cursor.getDouble(cursor.getColumnIndex(LATITUDE)),
+                    cursor.getDouble(cursor.getColumnIndex(LONGITUDE)),
+                    cursor.getString(cursor.getColumnIndex(TYPE)),
+                    cursor.getString(cursor.getColumnIndex(ADDRESS)),
+                    cursor.getString(cursor.getColumnIndex(PHONE)),
+                    cursor.getString(cursor.getColumnIndex(WEB))
+            );
+            places.add(place);
+            cursor.moveToNext();
+        }
+        return places;
+    }
+
 }

@@ -59,6 +59,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     private double epsilonLatLng = 0.001;
     private SQLiteDatabase db;
     private Locations locationsDatabase;
+    public String asd = "DFHFASFDJFJA";
 
     public MapFragment(){}
 
@@ -90,6 +91,8 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 getUserLocation();
             }
         });
+
+        System.out.println("Map oncreateview");
 
         return rootView;
     }
@@ -150,6 +153,12 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
 
         // Try to fresh the places from the server
         new GetPlacesFromServer(this).execute();
+    }
+
+    public void getInterestingPlacesInCheckedCategories(List<String> categories){
+        locationsDatabase = new Locations(context);
+        interestingPlaces = locationsDatabase.getPlacesInCategories(categories);
+        addPlaceMarkers();
     }
 
     public void checkNearPlaces(){
