@@ -1,11 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:text="Profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView2" />
+        android:id="@+id/gold_titles"
+        android:textColor="@color/gold"
+        android:textSize="30sp"
+        android:textAlignment="center"
+        android:layout_marginBottom="2dp"
+        tools:text="Gold titles " />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/silver_titles"
+        android:textColor="@color/silver"
+        android:textSize="24sp"
+        android:textAlignment="center"
+        android:layout_marginBottom="2dp"
+        tools:text="Silver titles " />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bronze_titles"
+        android:textColor="@color/bronze"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:layout_marginBottom="2dp"
+        tools:text="Bronze titles " />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/church"
+            android:id="@+id/profile_church"
+            android:layout_weight="1"
+            android:elevation="0dp"
+            android:contentDescription="asd"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/museum"
+            android:id="@+id/profile_museum"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/other"
+            android:id="@+id/profile_other"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/cafe"
+            android:id="@+id/profile_cafe"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
+    </LinearLayout>
 </LinearLayout>
