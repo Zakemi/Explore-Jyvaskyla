@@ -60,9 +60,7 @@ public class Visits extends SQLiteOpenHelper {
             return false;
         }
         else {
-            Integer id = cursor.getInt(0);
             db.close();
-            System.out.println(id);
             return true;
         }
     }

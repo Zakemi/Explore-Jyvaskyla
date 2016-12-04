@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.InterestingPlace;
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
@@ -42,7 +45,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     MapView mMapView;
     private GoogleMap googleMap;
     private Marker userMarker;
-    private List<Marker> placeMarkers;
+    private Map<Marker, InterestingPlace> placeMarkersAndData;
     private List<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
     private Locations locationsDatabase;
@@ -77,6 +80,51 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 googleMap = mMap;
                 getInterestingPlaces();
                 getUserLocation();
+
+                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        View view = getActivity().getLayoutInflater().inflate(R.layout.infowindow, null);
+                        TextView name = (TextView) view.findViewById(R.id.info_name);
+                        TextView address = (TextView) view.findViewById(R.id.info_address);
+                        TextView phone = (TextView) view.findViewById(R.id.info_phone);
+                        TextView web = (TextView) view.findViewById(R.id.info_web);
+                        InterestingPlace place = placeMarkersAndData.get(marker);
+                        if (place != null){
+                            if (!place.getName().equals("null") && !place.getName().equals(""))
+                                name.setText(place.getName());
+                            else
+                                name.setVisibility(View.GONE);
+
+                            if (!place.getAddress().equals("null") && !place.getAddress().equals(""))
+                                address.setText(place.getAddress());
+                            else
+                                address.setVisibility(View.GONE);
+
+                            if (!place.getPhone().equals("null") && !place.getPhone().equals(""))
+                                phone.setText(place.getPhone());
+                            else
+                                phone.setVisibility(View.GONE);
+
+                            if (!place.getWeb().equals("null") && !place.getWeb().equals(""))
+                                web.setText(place.getWeb());
+                            else
+                                web.setVisibility(View.GONE);
+                        }else if (marker.getPosition().longitude == userMarker.getPosition().longitude &&
+                                marker.getPosition().latitude == userMarker.getPosition().latitude){
+                            name.setText("You");
+                            address.setVisibility(View.GONE);
+                            phone.setVisibility(View.GONE);
+                            web.setVisibility(View.GONE);
+                        }
+                        return view;
+                    }
+                });
             }
         });
 
@@ -101,6 +149,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                             .position(userLocation)
                             .title("You are here")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.user))
+                            .zIndex(1.0f)
                     );
                 }
                 else {
@@ -133,10 +182,9 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     public void getInterestingPlaces(){
         // Get places from database
         interestingPlaces = locationsDatabase.getPlaces();
-        System.out.println(interestingPlaces.size());
+        System.out.println("____****____ New places");
         // Add place markers on the map
         addPlaceMarkers();
-        System.out.println(placeMarkers.size());
 
         // Try to fresh the places from the server
         new GetPlacesFromServer(this).execute();
@@ -144,6 +192,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
 
     public void getInterestingPlacesInCheckedCategories(List<String> categories){
         interestingPlaces = locationsDatabase.getPlacesInCategories(categories);
+        System.out.println("____****____ New places");
         addPlaceMarkers();
     }
 
@@ -172,6 +221,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     @Override
     public void onRemoteCallComplete(String jsonString) {
         interestingPlaces = new ArrayList<InterestingPlace>();
+        System.out.println("____****____ New places");
         try {
             JSONArray jsonArray = new JSONArray(jsonString);
             for (int i=0; i<jsonArray.length(); i++){
@@ -201,20 +251,22 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     }
 
     private void addPlaceMarkers(){
-        if (placeMarkers != null) {
-            for (int i = 0; i < placeMarkers.size(); i++) {
-                placeMarkers.get(i).remove();
+        System.out.println("____####____ New markers");
+        if (placeMarkersAndData != null){
+            for (Marker marker: placeMarkersAndData.keySet()){
+                marker.remove();
             }
-            placeMarkers = null;
         }
-        placeMarkers = new ArrayList<>();
+        placeMarkersAndData = new HashMap<>();
         for (int i=0; i<interestingPlaces.size(); i++){
-            placeMarkers.add(googleMap.addMarker(new MarkerOptions()
+            // TODO
+            int id = context.getResources().getIdentifier("@drawable/"+interestingPlaces.get(i).getType()+"_icon", "drawable", getActivity().getPackageName());
+            placeMarkersAndData.put(googleMap.addMarker(new MarkerOptions()
                     .position(interestingPlaces.get(i).getPosition())
                     .title(interestingPlaces.get(i).getName() + "(" + interestingPlaces.get(i).getType() + ")")
-            ));
+                    .icon(BitmapDescriptorFactory.fromResource(id))
+            ), interestingPlaces.get(i));
         }
-
     }
 
     @Override
