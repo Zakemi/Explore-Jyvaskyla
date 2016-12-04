@@ -1,24 +1,15 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid.fragments;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,9 +17,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -40,11 +29,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import fi.jamk.hunteam.explorejyvaskylaandroid.AddPlaceActivity;
-import fi.jamk.hunteam.explorejyvaskylaandroid.DatabaseHelper;
-import fi.jamk.hunteam.explorejyvaskylaandroid.InterestingPlace;
+import fi.jamk.hunteam.explorejyvaskylaandroid.model.InterestingPlace;
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
 import fi.jamk.hunteam.explorejyvaskylaandroid.database.Locations;
+import fi.jamk.hunteam.explorejyvaskylaandroid.database.Visits;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
 
 
@@ -57,9 +45,8 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     private List<Marker> placeMarkers;
     private List<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
-    private SQLiteDatabase db;
     private Locations locationsDatabase;
-    public String asd = "DFHFASFDJFJA";
+    private Visits visitsDatabase;
 
     public MapFragment(){}
 
@@ -69,7 +56,8 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         super.onCreateView(inflater, container, savedInstanceState);
 
         context = getActivity().getApplicationContext();
-        db = (new DatabaseHelper(context)).getWritableDatabase();
+        visitsDatabase = new Visits(context);
+        locationsDatabase = new Locations(context);
 
         View rootView = inflater.inflate(R.layout.activity_maps, container, false);
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
@@ -92,7 +80,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             }
         });
 
-        System.out.println("Map oncreateview");
+
 
         return rootView;
     }
@@ -144,7 +132,6 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
      */
     public void getInterestingPlaces(){
         // Get places from database
-        locationsDatabase = new Locations(context);
         interestingPlaces = locationsDatabase.getPlaces();
         System.out.println(interestingPlaces.size());
         // Add place markers on the map
@@ -156,7 +143,6 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     }
 
     public void getInterestingPlacesInCheckedCategories(List<String> categories){
-        locationsDatabase = new Locations(context);
         interestingPlaces = locationsDatabase.getPlacesInCategories(categories);
         addPlaceMarkers();
     }
@@ -167,11 +153,11 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 InterestingPlace place = interestingPlaces.get(i);
                 if (getDistance(userMarker.getPosition().latitude, place.getPosition().latitude) < epsilonLatLng
                         && getDistance(userMarker.getPosition().longitude, place.getPosition().longitude) < epsilonLatLng){
-                    if (isPlaceVisitedAlready(place)){
+                    if (visitsDatabase.isPlaceVisitedAlready(place)){
                         Toast.makeText(context, "Already visited: " + place.getName(), Toast.LENGTH_LONG).show();
                     }
                     else {
-                        addVisitedPlaceToDatabase(place);
+                        visitsDatabase.addVisitedPlaceToDatabase(place);
                         Toast.makeText(context, "Add to db: " + place.getName(), Toast.LENGTH_LONG).show();
                     }
                 }
@@ -181,26 +167,6 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
 
     public double getDistance(double param1, double param2){
         return Math.abs(param1 - param2);
-    }
-
-    public void addVisitedPlaceToDatabase(InterestingPlace place){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("_id", place.getId());
-        contentValues.put(DatabaseHelper.VPT_NAME, place.getName());
-        contentValues.put(DatabaseHelper.VPT_LAT, place.getPosition().latitude);
-        contentValues.put(DatabaseHelper.VPT_LNG, place.getPosition().longitude);
-        db.insert(DatabaseHelper.VISITED_PLACES_TABLE, null, contentValues);
-    }
-
-    public boolean isPlaceVisitedAlready(InterestingPlace place){
-        Cursor cursor = db.rawQuery("SELECT _id from " + DatabaseHelper.VISITED_PLACES_TABLE
-                + " WHERE _id LIKE " + place.getId(), null);
-        if (cursor.getCount() == 0){
-            return false;
-        }
-        else {
-            return true;
-        }
     }
 
     @Override
@@ -245,7 +211,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         for (int i=0; i<interestingPlaces.size(); i++){
             placeMarkers.add(googleMap.addMarker(new MarkerOptions()
                     .position(interestingPlaces.get(i).getPosition())
-                    .title(interestingPlaces.get(i).getName())
+                    .title(interestingPlaces.get(i).getName() + "(" + interestingPlaces.get(i).getType() + ")")
             ));
         }
 

@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         mapFragment.getInterestingPlacesInCheckedCategories(categories);
-        System.out.println(mapFragment.asd);
         mViewPager.setCurrentItem(1);
     }
 

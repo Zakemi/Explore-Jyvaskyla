@@ -1,4 +1,4 @@
-package fi.jamk.hunteam.explorejyvaskylaandroid;
+package fi.jamk.hunteam.explorejyvaskylaandroid.model;
 
 import com.google.android.gms.maps.model.LatLng;
 

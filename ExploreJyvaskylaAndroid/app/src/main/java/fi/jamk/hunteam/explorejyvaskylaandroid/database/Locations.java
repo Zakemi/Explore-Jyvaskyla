@@ -7,9 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import fi.jamk.hunteam.explorejyvaskylaandroid.InterestingPlace;
+import fi.jamk.hunteam.explorejyvaskylaandroid.model.InterestingPlace;
 
 /**
  * Created by DoubleD on 2016. 12. 01..
@@ -19,20 +21,19 @@ public class Locations extends SQLiteOpenHelper{
 
     private SQLiteDatabase db;
 
-    private static final String DATABASE = "database";
-    private static final String TABLE = "locations";
-    private static final String ID = "ID";
-    private static final String LATITUDE = "Latitude";
-    private static final String LONGITUDE = "Longitude";
-    private static final String NAME = "Name";
-    private static final String TYPE = "Type";
-    private static final String ADDRESS = "Address";
-    private static final String PHONE = "Phone";
-    private static final String WEB = "Web";
+    public static final String DATABASE = "database";
+    public static final String TABLE = "locations";
+    public static final String ID = "ID";
+    public static final String LATITUDE = "Latitude";
+    public static final String LONGITUDE = "Longitude";
+    public static final String NAME = "Name";
+    public static final String TYPE = "Type";
+    public static final String ADDRESS = "Address";
+    public static final String PHONE = "Phone";
+    public static final String WEB = "Web";
 
     public Locations(Context context) {
         super(context, DATABASE, null, 1);
-        db = this.getWritableDatabase();
     }
 
     @Override
@@ -68,6 +69,7 @@ public class Locations extends SQLiteOpenHelper{
         content.put(PHONE, place.getPhone());
         content.put(WEB, place.getWeb());
         db.insert(TABLE, null, content);
+        db.close();
     }
 
     public void addPlaces(List<InterestingPlace> places){
@@ -96,6 +98,7 @@ public class Locations extends SQLiteOpenHelper{
             places.add(place);
             cursor.moveToNext();
         }
+        db.close();
         return places;
     }
 
@@ -127,7 +130,21 @@ public class Locations extends SQLiteOpenHelper{
             places.add(place);
             cursor.moveToNext();
         }
+        db.close();
         return places;
+    }
+
+    public Map<String, Integer> getCategoryCount(){
+        Map<String, Integer> result = new HashMap<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + TYPE + ", count(" + TYPE + ") as CatCount FROM " + TABLE + " GROUP BY " + TYPE, null);
+        cursor.moveToFirst();
+        for (int i=0; i<cursor.getCount(); i++){
+            result.put(cursor.getString(0), cursor.getInt(1));
+            cursor.moveToNext();
+        }
+        db.close();
+        return result;
     }
 
 }
