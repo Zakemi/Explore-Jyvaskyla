@@ -1,6 +1,10 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -11,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +45,7 @@ import fi.jamk.hunteam.explorejyvaskylaandroid.database.Visits;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
 
 
-public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack {
+public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack, GoogleMap.OnInfoWindowClickListener {
 
     private Context context;
     private MapView mMapView;
@@ -81,10 +86,35 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLocation, 14.0f));
+                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        System.out.println("____ onInfoWindowClick");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        LayoutInflater inflater = (LayoutInflater)context.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
+                        View v = inflater.inflate(R.layout.dialog_rank_place, null);
+                        RatingBar ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
+                        builder.setTitle(R.string.rank_place)
+                                .setView(v)
+                                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        RatingBar ratingBar = (RatingBar) ((AlertDialog) dialog).findViewById(R.id.ratingBar);
+                                        sendRating(ratingBar.getRating());
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // what?
+                                    }
+                                })
+                                .create().show();
+                    }
+                });
                 getInterestingPlaces();
                 getUserLocation();
-
-                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                     @Override
                     public View getInfoWindow(Marker marker) {
                         View view = getActivity().getLayoutInflater().inflate(R.layout.infowindow, null);
@@ -131,9 +161,11 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             }
         });
 
-
-
         return rootView;
+    }
+
+    public void sendRating(float rating){
+        System.out.println("____" + rating);
     }
 
     /**
@@ -301,5 +333,11 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+
     }
 }
