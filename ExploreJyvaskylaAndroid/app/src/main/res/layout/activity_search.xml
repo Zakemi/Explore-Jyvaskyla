@@ -87,8 +87,9 @@
         android:clickable="true"
         app:layout_anchor="@id/view"
         app:layout_anchorGravity="bottom|right|end"
-        app:backgroundTint="@color/place_autocomplete_search_text"
-        android:src="@android:drawable/ic_input_add"
-        android:onClick="search" />
+        android:src="@drawable/check"
+        android:onClick="search"
+        app:elevation="7dp" />
+
 
 </android.support.design.widget.CoordinatorLayout>

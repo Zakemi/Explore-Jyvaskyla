@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(1);
     }
 
     /**
@@ -147,4 +148,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void setMapCamera(View v){
+        MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(1);
+        mapFragment.setMapCamera();
+    }
+
+
+    public void goToProfile(View v){
+        mViewPager.setCurrentItem(2);
+    }
+
+    public void goToSearch(View v){
+        mViewPager.setCurrentItem(0);
+    }
+
 }

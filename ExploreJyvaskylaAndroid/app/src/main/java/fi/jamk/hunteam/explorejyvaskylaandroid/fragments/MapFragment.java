@@ -1,6 +1,7 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -84,11 +85,6 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                     @Override
                     public View getInfoWindow(Marker marker) {
-                        return null;
-                    }
-
-                    @Override
-                    public View getInfoContents(Marker marker) {
                         View view = getActivity().getLayoutInflater().inflate(R.layout.infowindow, null);
                         TextView name = (TextView) view.findViewById(R.id.info_name);
                         TextView address = (TextView) view.findViewById(R.id.info_address);
@@ -124,6 +120,11 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                         }
                         return view;
                     }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        return null;
+                    }
                 });
             }
         });
@@ -148,7 +149,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                     userMarker = googleMap.addMarker(new MarkerOptions()
                             .position(userLocation)
                             .title("You are here")
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.user))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.user2))
                             .zIndex(1.0f)
                     );
                 }
@@ -174,6 +175,14 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         };
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    public void setMapCamera(){
+        if (userMarker != null && userMarker.getPosition() != null){
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 14.0f));
+        } else {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(62.2429368, 25.7476247), 14.0f));
+        }
     }
 
     /**

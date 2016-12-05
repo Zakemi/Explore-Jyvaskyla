@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,6 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
 
     private List<String> categories;
     public List<Model> models;
-    private final static int CHECKED_COLOR = Color.CYAN;
-    private final static int UNCHECKED_COLOR = Color.TRANSPARENT;
     private View rootView;
 
     public SearchFragment(){}
@@ -43,7 +42,8 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
 
         ListView listView = (ListView) rootView.findViewById(R.id.categories_list);
         categories = new Categories().getCategoryNames();
-        models = new ArrayList<>();        for (String category: categories){
+        models = new ArrayList<>();
+        for (String category: categories){
             models.add(new Model(category));
         }
         ArrayAdapter adapter = new CategoryArrayAdapter(getContext(), categories);
@@ -64,9 +64,12 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         models.get(position).changeSelected();
         ImageView image = (ImageView) view.findViewById(R.id.category_image);
         if (models.get(position).isSelected()){
-            image.setBackgroundColor(CHECKED_COLOR);
+            System.out.println(models.get(position).getName() + " with view id: " + view);
+            image.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryLight));
+            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryLight));
         } else {
-            image.setBackgroundColor(UNCHECKED_COLOR);
+            image.setBackgroundColor(Color.TRANSPARENT);
+            view.setBackgroundColor(Color.TRANSPARENT);
         }
         System.out.println("Clicked item!!!" + models.get(position).isSelected());
     }
@@ -76,12 +79,23 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         if (v.getId() == R.id.select_all){
             ListView listView = (ListView) rootView.findViewById(R.id.categories_list);
             for (int i=0; i<listView.getAdapter().getCount(); i++){
-                View rowView = listView.getAdapter().getView(i, null, listView);
-                ImageView imageView = (ImageView) rowView.findViewById(R.id.category_image);
-                imageView.setBackgroundColor(CHECKED_COLOR);
+                View rowView = listView.getChildAt(i -
+                        listView.getFirstVisiblePosition());
+                if (rowView != null){
+                    rowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryLight));
+                    models.get(i).setSelected(true);
+                }
             }
         } else if (v.getId() == R.id.select_nothing){
-            System.out.println("SELECT NOTHING");
+            ListView listView = (ListView) rootView.findViewById(R.id.categories_list);
+            for (int i=0; i<listView.getAdapter().getCount(); i++){
+                View rowView = listView.getChildAt(i -
+                        listView.getFirstVisiblePosition());
+                if (rowView != null){
+                    rowView.setBackgroundColor(Color.TRANSPARENT);
+                    models.get(i).setSelected(false);
+                }
+            }
         }
     }
 
@@ -120,6 +134,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
 
         private String name;
         private boolean selected;
+        private RelativeLayout view;
 
         public Model(String name) {
             this.name = name;

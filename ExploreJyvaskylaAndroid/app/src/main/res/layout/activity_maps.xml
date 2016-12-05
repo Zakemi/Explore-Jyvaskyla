@@ -9,15 +9,50 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button2"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="12dp"
+        android:id="@+id/home_button"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:background="@drawable/account"
+        android:onClick="setMapCamera" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="83dp"
+        android:id="@+id/button6"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_marginBottom="11dp"
+        android:background="@drawable/arrow_right"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/home_button"
+        android:onClick="goToProfile" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button7"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:background="@drawable/arrow_left"
+        android:layout_alignBaseline="@+id/button6"
+        android:layout_alignBottom="@+id/button6"
+        android:layout_toStartOf="@+id/button6"
+        android:onClick="goToSearch" />
+
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button2"
-        android:background="@drawable/add_place"
         android:onClick="addPlace"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="11dp"
-        android:layout_marginBottom="11dp" />
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="11dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/add_place"
+        style="@style/Widget.AppCompat.Button.Small" />
 
 </RelativeLayout>
