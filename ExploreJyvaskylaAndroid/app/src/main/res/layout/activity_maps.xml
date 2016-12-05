@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
     tools:context=".MapsActivity" >
 
     <com.google.android.gms.maps.MapView
@@ -20,28 +21,35 @@
         android:background="@drawable/account"
         android:onClick="setMapCamera" />
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="83dp"
-        android:id="@+id/button6"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:layout_marginBottom="11dp"
-        android:background="@drawable/arrow_right"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/home_button"
-        android:onClick="goToProfile" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button7"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:background="@drawable/arrow_left"
-        android:layout_alignBaseline="@+id/button6"
-        android:layout_alignBottom="@+id/button6"
-        android:layout_toStartOf="@+id/button6"
-        android:onClick="goToSearch" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_left"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:background="@drawable/arrow_left"
+            android:onClick="goToSearch"
+            android:layout_marginRight="3dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_right"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:background="@drawable/arrow_right"
+            android:onClick="goToProfile"
+            android:layout_marginLeft="3dp" />
+
+
+     </LinearLayout>
+
 
     <ImageButton
         android:layout_width="wrap_content"

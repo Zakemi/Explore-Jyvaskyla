@@ -11,12 +11,13 @@
     tools:context="fi.jamk.hunteam.explorejyvaskylaandroid.AddPlaceActivity">
 
     <TextView
-        android:text="Use the Google Maps to pick a place, the coordinates. Or fill the fields below. Fields with * are required."
+        android:text="Use the Google Maps to pick a place, the coordinates. Or fill the fields below.\nFields with * are required."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:id="@+id/activity_description"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <TextView
         android:text="Name*"
@@ -25,7 +26,8 @@
         android:id="@+id/text_name"
         android:layout_alignBaseline="@+id/add_place_name"
         android:layout_alignBottom="@+id/add_place_name"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <TextView
         android:text="Address*"
@@ -34,7 +36,8 @@
         android:id="@+id/text_address"
         android:layout_alignBaseline="@+id/add_place_address"
         android:layout_alignBottom="@+id/add_place_address"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -43,7 +46,8 @@
         android:ems="10"
         android:id="@+id/add_place_lat"
         android:layout_below="@+id/add_place_address"
-        android:layout_toEndOf="@+id/text_lng" />
+        android:layout_toEndOf="@+id/text_lng"
+        android:textColor="@color/colorSecondaryText" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -52,7 +56,8 @@
         android:ems="10"
         android:id="@+id/add_place_address"
         android:layout_below="@+id/add_place_name"
-        android:layout_alignStart="@+id/add_place_lat" />
+        android:layout_alignStart="@+id/add_place_lat"
+        android:textColor="@color/colorSecondaryText" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -61,7 +66,8 @@
         android:ems="10"
         android:id="@+id/add_place_name"
         android:layout_below="@+id/button3"
-        android:layout_alignStart="@+id/add_place_address" />
+        android:layout_alignStart="@+id/add_place_address"
+        android:textColor="@color/colorSecondaryText" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -71,7 +77,8 @@
         android:id="@+id/add_place_lng"
         android:layout_alignBaseline="@+id/text_lng"
         android:layout_alignBottom="@+id/text_lng"
-        android:layout_toEndOf="@+id/text_lng" />
+        android:layout_toEndOf="@+id/text_lng"
+        android:textColor="@color/colorSecondaryText" />
 
     <TextView
         android:text="Lattitude*"
@@ -80,7 +87,8 @@
         android:id="@+id/text_lat"
         android:layout_alignBaseline="@+id/add_place_lat"
         android:layout_alignBottom="@+id/add_place_lat"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <TextView
         android:text="Longitude*"
@@ -89,7 +97,8 @@
         android:layout_marginTop="13dp"
         android:id="@+id/text_lng"
         android:layout_below="@+id/add_place_lat"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <Button
         android:text="Pick place"
@@ -108,7 +117,8 @@
         android:id="@+id/add_place_web"
         android:inputType="textUri"
         android:layout_below="@+id/add_place_phone"
-        android:layout_alignStart="@+id/add_place_lng" />
+        android:layout_alignStart="@+id/add_place_lng"
+        android:textColor="@color/colorSecondaryText" />
 
     <TextView
         android:text="Website"
@@ -117,16 +127,8 @@
         android:id="@+id/text_web"
         android:layout_alignBaseline="@+id/add_place_web"
         android:layout_alignBottom="@+id/add_place_web"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:text="Add place"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button4"
-        android:layout_below="@+id/add_place_web"
-        android:layout_alignParentEnd="true"
-        android:onClick="addPlace" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
 
     <TextView
@@ -136,7 +138,8 @@
         android:id="@+id/text_type"
         android:layout_alignBaseline="@+id/add_place_type"
         android:layout_alignBottom="@+id/add_place_type"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <Spinner
         android:layout_width="match_parent"
@@ -152,7 +155,8 @@
         android:ems="10"
         android:id="@+id/add_place_phone"
         android:layout_below="@+id/add_place_type"
-        android:layout_alignStart="@+id/add_place_web" />
+        android:layout_alignStart="@+id/add_place_web"
+        android:textColor="@color/colorSecondaryText" />
 
     <TextView
         android:text="Phone"
@@ -161,7 +165,8 @@
         android:id="@+id/text_phone"
         android:layout_alignBaseline="@+id/add_place_phone"
         android:layout_alignBottom="@+id/add_place_phone"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorPrimaryText" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -172,6 +177,16 @@
         android:layout_alignParentStart="true"
         android:id="@+id/add_place_id"
         android:visibility="gone" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button4"
+        android:onClick="addPlace"
+        android:layout_below="@+id/add_place_web"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/check"
+        style="@style/Widget.AppCompat.Button.Small" />
 
 
 </RelativeLayout>

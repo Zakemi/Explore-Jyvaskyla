@@ -42,8 +42,8 @@ import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromSer
 
 public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack {
 
-    Context context;
-    MapView mMapView;
+    private Context context;
+    private MapView mMapView;
     private GoogleMap googleMap;
     private Marker userMarker;
     private Map<Marker, InterestingPlace> placeMarkersAndData;
@@ -51,6 +51,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     private double epsilonLatLng = 0.001;
     private Locations locationsDatabase;
     private Visits visitsDatabase;
+    private final LatLng cityLocation = new LatLng(62.2429368, 25.7476247);
 
     public MapFragment(){}
 
@@ -79,6 +80,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             @Override
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLocation, 14.0f));
                 getInterestingPlaces();
                 getUserLocation();
 
@@ -150,7 +152,6 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                             .position(userLocation)
                             .title("You are here")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.user2))
-                            .zIndex(1.0f)
                     );
                 }
                 else {
@@ -181,7 +182,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         if (userMarker != null && userMarker.getPosition() != null){
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 14.0f));
         } else {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(62.2429368, 25.7476247), 14.0f));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLocation, 14.0f));
         }
     }
 

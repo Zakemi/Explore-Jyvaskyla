@@ -12,17 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.fitness.request.ListClaimedBleDevicesRequest;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.Categories;
