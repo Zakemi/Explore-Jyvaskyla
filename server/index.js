@@ -1,5 +1,6 @@
 var express = require('express');
 var mysql = require('mysql');
+var verifier = require('google-id-token-verifier');
 var app = express();
 
 var sql = mysql.createPool({
@@ -36,6 +37,22 @@ app.get('/locations', function(req, res) {
 
         res.send(JSON.stringify(rows));
     });
+});
+
+app.get('/login/:idToken', function(req, res){
+	var idToken = req.params.idToken;
+	var clientId = "155033622944-qvat1jcvr6o5u709g8n50ecr889osrl7.apps.googleusercontent.com";
+	verifier.verify(idToken, clientId, function (err, tokenInfo) {
+		if (!err) {
+			result = {}
+			result["id"] = tokenInfo.sub;
+			result["name"] = tokenInfo.name;
+			result["picture"] = tokenInfo.picture;
+			res.send(JSON.stringify(result));
+			return;
+		}
+		res.send(JSON.stringify({"id": null}))
+	});
 });
 
 app.post('/locations', function(req, res) {

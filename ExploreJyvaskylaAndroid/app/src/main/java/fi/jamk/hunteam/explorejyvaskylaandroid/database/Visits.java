@@ -27,6 +27,11 @@ public class Visits extends SQLiteOpenHelper {
     public Visits(Context context) {
         super(context, DATABASE, null, 1);
         this.context = context;
+        try{
+            onCreate(this.getWritableDatabase());
+        } catch (android.database.sqlite.SQLiteException e){
+            System.out.println("Visits is already created.");
+        }
     }
 
     @Override

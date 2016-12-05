@@ -1,10 +1,12 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -13,17 +15,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.Login;
+
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener{
+        View.OnClickListener,
+        Login.LoginCallBack{
 
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 1;
+    public static final String PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        isUserLoggedIn();
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -78,10 +86,39 @@ public class LoginActivity extends AppCompatActivity implements
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             String idToken = acct.getIdToken();
-            System.out.println("____ idToken: " + idToken);
+            // Send id token to server
+            new Login(this).execute(idToken);
         } else {
             // Signed out, show unauthenticated UI.
 
+        }
+    }
+
+    public void isUserLoggedIn(){
+        // Restore preferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String id = settings.getString("id", "");
+        if (!id.equals("")){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
+    public void onRemoteCallComplete(String id, String name, String picture) {
+        if (id != null){
+            // Save login data and start MainActivity
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("id", id);
+            editor.putString("name", name);
+            editor.putString("picture", picture);
+            // Commit the edits!
+            editor.commit();
+            isUserLoggedIn();
+        } else {
+            Toast.makeText(this, "Login failed, please try again", Toast.LENGTH_LONG).show();
         }
     }
 }

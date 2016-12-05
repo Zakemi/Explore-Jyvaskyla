@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Zakemi/Explore-Jyvaskyla#readme",
   "dependencies": {
     "express": "^4.14.0",
+    "google-id-token-verifier": "^0.2.3",
     "mysql": "^2.11.1"
   }
 }
