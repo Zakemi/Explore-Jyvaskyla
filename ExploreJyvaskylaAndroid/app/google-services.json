@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "155033622944",
+    "project_id": "heroic-equinox-145114"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:155033622944:android:a4b8d6e8b22d95fc",
+        "android_client_info": {
+          "package_name": "fi.jamk.hunteam.explorejyvaskylaandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "155033622944-a3ov42skt0im09rjtgfjohb79bsj2fc3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fi.jamk.hunteam.explorejyvaskylaandroid",
+            "certificate_hash": "B67EB1EF2182321E47A2AB963C22EB4D50357B0E"
+          }
+        },
+        {
+          "client_id": "155033622944-4kmpevc5f0ifab9ot8oi1aeb4osdskma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5nKCg4qSkKgOeRb5W-3wN0dbNtOVdPwI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
