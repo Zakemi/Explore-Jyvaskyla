@@ -27,6 +27,7 @@ function json_validate(scheme, data) {
 }
 
 app.get('/locations', function(req, res) {
+	console.log("Locations request");
     sql.query('SELECT * FROM locations', function(err, rows, fields) {
         if(err) {
             console.log('Locations query fail!', err);
@@ -44,16 +45,49 @@ app.get('/login/:idToken', function(req, res){
 	var clientId = "155033622944-qvat1jcvr6o5u709g8n50ecr889osrl7.apps.googleusercontent.com";
 	verifier.verify(idToken, clientId, function (err, tokenInfo) {
 		if (!err) {
-			result = {}
-			result["id"] = tokenInfo.sub;
-			result["name"] = tokenInfo.name;
-			result["picture"] = tokenInfo.picture;
-			res.send(JSON.stringify(result));
-			return;
+			// make query to find the user in the db
+			checkUserInDatabase(tokenInfo, function(err, rows){
+				if (err){
+					console.log('Find user query fail', err);
+				} else {
+					if (rows.length == 0){
+						// no user in the db, save it...
+						sql.query('INSERT INTO users (Id, Name, Picture) VALUES (?, ?, ?)', [tokenInfo.sub, tokenInfo.name, tokenInfo.picture], 
+						function(err, results) {
+							if(err) {
+								console.log('Insert user query fail', err);
+								res.send(JSON.stringify({"id": null}))
+								return;
+							} else {
+								// ... and send to the client
+								result = {};
+								result["Id"] = tokenInfo.sub;
+								result["Name"] = tokenInfo.name;
+								result["Picture"] = tokenInfo.picture;
+								res.send(JSON.stringify(result));
+								return;
+							}
+						});
+					} else {
+						// send the first row from the db
+						res.send(JSON.stringify(rows[0]));
+						return;
+					}
+				}
+			});
 		}
-		res.send(JSON.stringify({"id": null}))
 	});
 });
+
+function checkUserInDatabase(tokenInfo, callback){
+	sql.query('SELECT * FROM users WHERE Id LIKE ' + tokenInfo.sub, function(err, rows, fields){
+		if (err){
+			console.log('Find user query fail', err);
+			callback(err, null);
+		}
+		callback(null, rows);
+	});
+}
 
 app.post('/locations', function(req, res) {
     var body = [];

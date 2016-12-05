@@ -34,6 +34,11 @@ public class Locations extends SQLiteOpenHelper{
 
     public Locations(Context context) {
         super(context, DATABASE, null, 1);
+        try{
+            onCreate(this.getWritableDatabase());
+        } catch (android.database.sqlite.SQLiteException e){
+            System.out.println("Locations is already created.");
+        }
     }
 
     @Override

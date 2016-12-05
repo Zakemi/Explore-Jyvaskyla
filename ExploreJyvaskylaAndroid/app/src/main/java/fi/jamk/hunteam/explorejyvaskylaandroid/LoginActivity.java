@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements
     public void isUserLoggedIn(){
         // Restore preferences
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        String id = settings.getString("id", "");
+        String id = settings.getString("Id", "");
         if (!id.equals("")){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -107,13 +107,14 @@ public class LoginActivity extends AppCompatActivity implements
 
     @Override
     public void onRemoteCallComplete(String id, String name, String picture) {
+        System.out.println("____ Received id: " + id);
         if (id != null){
             // Save login data and start MainActivity
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString("id", id);
-            editor.putString("name", name);
-            editor.putString("picture", picture);
+            editor.putString("Id", id);
+            editor.putString("Name", name);
+            editor.putString("Picture", picture);
             // Commit the edits!
             editor.commit();
             isUserLoggedIn();

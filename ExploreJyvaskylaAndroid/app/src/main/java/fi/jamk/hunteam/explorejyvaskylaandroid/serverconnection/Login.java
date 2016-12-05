@@ -64,9 +64,9 @@ public class Login extends AsyncTask<String, Void, String> {
         System.out.println("____ from the server: " + json);
         try {
             JSONObject jsonObject = new JSONObject(json);
-            String id = jsonObject.getString("id");
-            String name = jsonObject.getString("name");
-            String picture = jsonObject.getString("picture");
+            String id = jsonObject.getString("Id");
+            String name = jsonObject.getString("Name");
+            String picture = jsonObject.getString("Picture");
             loginCallBack.onRemoteCallComplete(id, name, picture);
         } catch (JSONException e) {
             loginCallBack.onRemoteCallComplete(null, null, null);
