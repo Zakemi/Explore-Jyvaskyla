@@ -103,7 +103,8 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
             String type = ((Spinner) findViewById(R.id.add_place_type)).getSelectedItem().toString();
             String phone = ((EditText) findViewById(R.id.add_place_phone)).getText().toString();
             String web = ((EditText) findViewById(R.id.add_place_web)).getText().toString();
-            new PostPlaceToServer(this).execute(id, name, address, lat, lng, type, phone, web);
+            new PostPlaceToServer(this).execute(id, name, address, lat, lng, type, phone, web,
+                    new ManageSharedPreferences.Manager(this).getId());
             Toast.makeText(this, "Place addiction on progress...", Toast.LENGTH_SHORT).show();
         }
         else {

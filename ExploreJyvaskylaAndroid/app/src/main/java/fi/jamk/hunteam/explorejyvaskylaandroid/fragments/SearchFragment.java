@@ -23,6 +23,8 @@ import java.util.List;
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.Categories;
 
+// The search screen. Used by the Main Activity
+
 public class SearchFragment extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener{
 
     private List<String> categories;
@@ -34,8 +36,9 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.activity_search, container, false);
+        rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
+        // Setup the listview
         ListView listView = (ListView) rootView.findViewById(R.id.categories_list);
         categories = new Categories().getCategoryNames();
         models = new ArrayList<>();
@@ -46,6 +49,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
+        // Setup the select all and nothing buttons
         RelativeLayout selectAll = (RelativeLayout) rootView.findViewById(R.id.select_all);
         selectAll.setOnClickListener(this);
         RelativeLayout selectNothing = (RelativeLayout) rootView.findViewById(R.id.select_nothing);
@@ -54,24 +58,24 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         return rootView;
     }
 
+    // Click on an item in the listview
+    // Change the status (selected or not) of the item
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // change the state of the checkbox
         models.get(position).changeSelected();
         ImageView image = (ImageView) view.findViewById(R.id.category_image);
         if (models.get(position).isSelected()){
-            System.out.println(models.get(position).getName() + " with view id: " + view);
             image.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryLight));
             view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryLight));
         } else {
             image.setBackgroundColor(Color.TRANSPARENT);
             view.setBackgroundColor(Color.TRANSPARENT);
         }
-        System.out.println("Clicked item!!!" + models.get(position).isSelected());
     }
 
     @Override
     public void onClick(View v) {
+        // Click on the select all button
         if (v.getId() == R.id.select_all){
             ListView listView = (ListView) rootView.findViewById(R.id.categories_list);
             for (int i=0; i<listView.getAdapter().getCount(); i++){
@@ -82,7 +86,9 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
                     models.get(i).setSelected(true);
                 }
             }
-        } else if (v.getId() == R.id.select_nothing){
+        }
+        // click on the select nothing button
+        else if (v.getId() == R.id.select_nothing){
             ListView listView = (ListView) rootView.findViewById(R.id.categories_list);
             for (int i=0; i<listView.getAdapter().getCount(); i++){
                 View rowView = listView.getChildAt(i -
@@ -95,6 +101,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         }
     }
 
+    // Adapter for the listview
     public class CategoryArrayAdapter extends ArrayAdapter<String>{
 
         private Context context;
@@ -109,28 +116,24 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // get row
+            // setup the view
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View rowView = inflater.inflate(R.layout.listlayout_search, parent, false);
-            // show phone name
             TextView textView = (TextView) rowView.findViewById(R.id.category_name);
             textView.setText(categories.get(position));
-            // show phone icon/image
             ImageView imageView = (ImageView) rowView.findViewById(R.id.category_image);
-
-            Resources resources = context.getResources();
             int id = context.getResources().getIdentifier("@drawable/"+categories.get(position), "drawable", getActivity().getPackageName());
             imageView.setImageResource(id);
-            // return row view
             return rowView;
         }
     }
 
+    // Local model for the class
+    // Store the name of the category in the listview and the status (selected or not)
     public class Model {
 
         private String name;
         private boolean selected;
-        private RelativeLayout view;
 
         public Model(String name) {
             this.name = name;

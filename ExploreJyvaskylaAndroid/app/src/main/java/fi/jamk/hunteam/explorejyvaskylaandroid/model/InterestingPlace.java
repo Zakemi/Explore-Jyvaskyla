@@ -8,9 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-/**
- * Created by DoubleD on 2016. 10. 21..
- */
+// Model for a place
 
 public class InterestingPlace {
     private int id;

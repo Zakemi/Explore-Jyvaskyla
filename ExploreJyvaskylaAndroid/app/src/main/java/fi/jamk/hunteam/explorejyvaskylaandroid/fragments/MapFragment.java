@@ -1,12 +1,8 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid.fragments;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SyncStatusObserver;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,8 +43,9 @@ import fi.jamk.hunteam.explorejyvaskylaandroid.database.Visits;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.PostRating;
 
+// Contains the map. Used by the Main Activity.
 
-public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack, GoogleMap.OnInfoWindowClickListener {
+public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack {
 
     private Context context;
     private MapView mMapView;
@@ -73,7 +70,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         visitsDatabase = new Visits(context);
         locationsDatabase = new Locations(context);
 
-        View rootView = inflater.inflate(R.layout.activity_maps, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
@@ -90,14 +87,13 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLocation, 14.0f));
+                // Make dialog when the user click on the marker's info window
                 googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        System.out.println("____ onInfoWindowClick");
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         LayoutInflater inflater = (LayoutInflater)context.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
                         View v = inflater.inflate(R.layout.dialog_rank_place, null);
-                        RatingBar ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
                         builder.setTitle(R.string.rank_place)
                                 .setView(v)
                                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
@@ -118,6 +114,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 });
                 getInterestingPlaces();
                 getUserLocation();
+                // Set the layout of the marker's info window
                 googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                     @Override
                     public View getInfoWindow(Marker marker) {
@@ -156,6 +153,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                             address.setVisibility(View.GONE);
                             phone.setVisibility(View.GONE);
                             web.setVisibility(View.GONE);
+                            rate.setVisibility(View.GONE);
                         }
                         return view;
                     }
@@ -171,6 +169,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         return rootView;
     }
 
+    // Send the user's rating about the selected place (marker)
     public void sendRating(float rating){
         // send to server
         String id = new ManageSharedPreferences.Manager(getContext()).getId();
@@ -225,6 +224,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
+    // Set the camera focus of the map
     public void setMapCamera(){
         if (userMarker != null && userMarker.getPosition() != null){
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 14.0f));
@@ -247,12 +247,14 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         new GetPlacesFromServer(this).execute();
     }
 
+    // Get places which are in the selected categories
     public void getInterestingPlacesInCheckedCategories(List<String> categories){
         interestingPlaces = locationsDatabase.getPlacesInCategories(categories);
-        System.out.println("____****____ New places");
         addPlaceMarkers();
     }
 
+    // Check, is there any place in the near (epsilonLatLng).
+    // If yes, it means the user visited a location
     public void checkNearPlaces(){
         if (interestingPlaces != null){
             for (int i=0; i<interestingPlaces.size(); i++){
@@ -264,6 +266,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                     }
                     else {
                         visitsDatabase.addVisitedPlaceToDatabase(place);
+                        addPlaceMarkers();
                         Toast.makeText(context, "Add to db: " + place.getName(), Toast.LENGTH_LONG).show();
                     }
                 }
@@ -271,14 +274,15 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         }
     }
 
+    // Get the distance between two number
     public double getDistance(double param1, double param2){
         return Math.abs(param1 - param2);
     }
 
+    // Got places from the server, save them to the database and update markers
     @Override
     public void onRemoteCallComplete(String jsonString) {
         interestingPlaces = new ArrayList<InterestingPlace>();
-        System.out.println("____****____ New places");
         try {
             JSONArray jsonArray = new JSONArray(jsonString);
             for (int i=0; i<jsonArray.length(); i++){
@@ -308,22 +312,26 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         addPlaceMarkers();
     }
 
+    // (Remove and) add markers on the map
     private void addPlaceMarkers(){
-        System.out.println("____####____ New markers");
+        // remove
         if (placeMarkersAndData != null){
             for (Marker marker: placeMarkersAndData.keySet()){
                 marker.remove();
             }
         }
+        // add
         placeMarkersAndData = new HashMap<>();
         for (int i=0; i<interestingPlaces.size(); i++){
-            // TODO
             int id = context.getResources().getIdentifier("@drawable/"+interestingPlaces.get(i).getType()+"_icon", "drawable", getActivity().getPackageName());
-            placeMarkersAndData.put(googleMap.addMarker(new MarkerOptions()
+            MarkerOptions markerOptions = new MarkerOptions()
                     .position(interestingPlaces.get(i).getPosition())
                     .title(interestingPlaces.get(i).getName() + "(" + interestingPlaces.get(i).getType() + ")")
-                    .icon(BitmapDescriptorFactory.fromResource(id))
-            ), interestingPlaces.get(i));
+                    .icon(BitmapDescriptorFactory.fromResource(id));
+            if (visitsDatabase.isPlaceVisitedAlready(interestingPlaces.get(i))){
+                markerOptions.alpha(0.5f);
+            }
+            placeMarkersAndData.put(googleMap.addMarker(markerOptions), interestingPlaces.get(i));
         }
     }
 
@@ -351,9 +359,4 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
         mMapView.onLowMemory();
     }
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-
-
-    }
 }
