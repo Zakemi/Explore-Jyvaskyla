@@ -19,8 +19,14 @@ public class Categories {
         categories = new HashMap<>();
         categories.put("museum", new Category("museum", "Knower of the Past", "Researcher of the Past", "Interested in the Past"));
         categories.put("cafe", new Category("cafe", "Drinks Coffee Like a Finnish", "Coffee Lover", "Knows What Coffee Is"));
-        categories.put("church", new Category("church", "churn gold", "church silver", "church bronze"));
-        categories.put("other", new Category("other", "other gold", "other silver", "other bronze"));
+        categories.put("church", new Category("church", "Close to God", "Seeking God", "Believer"));
+        categories.put("entertainment", new Category("entertainment", "Eternal Child", "On the Move", "Playful"));
+        categories.put("bar", new Category("bar", "Just one more beer", "Makes Friends in bar", "Bar visitor"));
+        categories.put("bakery", new Category("bakery", "Pulla Lover", "Cookies researcher", "Sweet-toothed"));
+        categories.put("food", new Category("food", "Chow Hound", "Globbler", "Hungry"));
+        categories.put("other", new Category("other", "Unkonwn Knower", "Going to Unusual Places", "Dissatisfied with the Known"));
+        categories.put("nature", new Category("nature", "Hippy", "Nature-Lover", "Touring"));
+        categories.put("park", new Category("park", "Park-ing", "Sitting on bench", "Park finder"));
     }
 
     // Return the name of the categories in a sorted list

@@ -21,6 +21,8 @@ import java.util.List;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.Categories;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.PostPlaceToServer;
 
+// Activity for the place addition
+
 public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToServer.PostPlaceCallBack {
 
     static final int PLACE_PICK_REQUEST = 1;
@@ -31,6 +33,7 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_place);
 
+        // setup the spinner with the categories
         Spinner spinner = (Spinner) findViewById(R.id.add_place_type);
         categories = new Categories();
         List<String> categoriesList = categories.getCategoryNames();
@@ -41,6 +44,7 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
         spinner.setAdapter(adapter);
     }
 
+    // Run the place picker intent
     public void pickPlace(View view){
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         builder.setLatLngBounds(new LatLngBounds.Builder().include(new LatLng(62.2401672,25.7484592)).build());
@@ -56,7 +60,9 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICK_REQUEST){
+            // The user picked a place
             if (resultCode == RESULT_OK){
+                // Set the value of the fields
                 Place place = PlacePicker.getPlace(data, this);
                 ((EditText) findViewById(R.id.add_place_id)).setText(place.getId());
                 ((EditText) findViewById(R.id.add_place_name)).setText(place.getName());
@@ -66,16 +72,11 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
                 ((EditText) findViewById(R.id.add_place_phone)).setText(place.getPhoneNumber());
                 if (place.getWebsiteUri() != null)
                     ((EditText) findViewById(R.id.add_place_web)).setText(place.getWebsiteUri().toString());
-                /*if (place.getPlaceTypes().size() > 0){
-                    Spinner spinner = (Spinner) findViewById(R.id.add_place_type);
-                    ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
-                    int position = adapter.getPosition(placeTypes.dict.get(place.getPlaceTypes().get(0)));
-                    spinner.setSelection(position);
-                }*/
             }
         }
     }
 
+    // Validate the fields before send to the server
     private boolean validateFields(){
         if (((EditText) findViewById(R.id.add_place_name)).getText().toString().equals("")){
             return false;
@@ -93,6 +94,7 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
         return true;
     }
 
+    // Handle the click on the OK button
     public void addPlace(View view){
         if (validateFields()){
             String id = ((EditText) findViewById(R.id.add_place_id)).getText().toString();
@@ -112,6 +114,7 @@ public class AddPlaceActivity extends AppCompatActivity implements PostPlaceToSe
         }
     }
 
+    // After the send finish the activity
     @Override
     public void onRemoteCallComplete(String json) {
         Toast.makeText(this, "Thanks for the new place!", Toast.LENGTH_LONG).show();

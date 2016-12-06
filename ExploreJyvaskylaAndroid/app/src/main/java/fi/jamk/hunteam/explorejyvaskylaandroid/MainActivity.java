@@ -19,16 +19,9 @@ import fi.jamk.hunteam.explorejyvaskylaandroid.fragments.MapFragment;
 import fi.jamk.hunteam.explorejyvaskylaandroid.fragments.ProfileFragment;
 import fi.jamk.hunteam.explorejyvaskylaandroid.fragments.SearchFragment;
 
-/**
- * Created by DoubleD on 2016. 11. 29..
- */
-
 public class MainActivity extends AppCompatActivity {
 
     private final int ADD_PLACE_REQUEST_CODE = 1;
-    private final long SEARCH_FRAGMENT_ID = 0;
-    private final long MAP_FRAGMENT_ID = 1;
-    private final long PROFILE_FRAGMENT_ID = 2;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -92,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     profileFragment = new ProfileFragment();
                 return profileFragment;
             }
-            System.out.println("Fragment will be null");
             return null;
         }
 
@@ -116,26 +108,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    // Click on the add place button on map fragment. Start the activity
     public void addPlace(View view){
         Intent intent = new Intent(this, AddPlaceActivity.class);
         startActivityForResult(intent, ADD_PLACE_REQUEST_CODE);
     }
 
+    // Click on the search button on search fragment
     public void search(View view){
         SearchFragment searchFragment = (SearchFragment) mSectionsPagerAdapter.getItem(0);
-        System.out.println(searchFragment.models.get(1).isSelected());
         MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(1);
         List<String> categories = new ArrayList<>();
+        // Get the categories from the search fragment
         for (SearchFragment.Model model: searchFragment.models){
             if (model.isSelected()){
                 categories.add(model.getName());
             }
         }
+        // Give the categories to the map fragment
         mapFragment.getInterestingPlacesInCheckedCategories(categories);
+        // Change the screen to the map view
         mViewPager.setCurrentItem(1);
     }
 
+    // Return result from an activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -149,16 +145,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Click on the set camera button on the map fragment
+    // Call the map fragment's function
     public void setMapCamera(View v){
         MapFragment mapFragment = (MapFragment) mSectionsPagerAdapter.getItem(1);
         mapFragment.setMapCamera();
     }
 
 
+    // Click on the right arrow on the map fragment
+    // Change screen to profile fragment
     public void goToProfile(View v){
         mViewPager.setCurrentItem(2);
     }
 
+    // Click on the left arrow on the map fragment
+    // Change screen to search fragment
     public void goToSearch(View v){
         mViewPager.setCurrentItem(0);
     }

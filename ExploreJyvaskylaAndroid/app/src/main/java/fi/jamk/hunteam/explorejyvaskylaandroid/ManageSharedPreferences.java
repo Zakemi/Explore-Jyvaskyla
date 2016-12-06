@@ -3,9 +3,7 @@ package fi.jamk.hunteam.explorejyvaskylaandroid;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by DoubleD on 2016. 12. 06..
- */
+// Helper class to save and get shared preferences
 
 public class ManageSharedPreferences {
 
@@ -17,6 +15,7 @@ public class ManageSharedPreferences {
         private String picture;
         private SharedPreferences settings;
 
+        // Get the stored data
         public Manager(Context context){
             settings = context.getSharedPreferences(PREFS_NAME, 0);
             id = settings.getString("Id", "");
@@ -36,6 +35,7 @@ public class ManageSharedPreferences {
             return picture;
         }
 
+        // Set the variables and store the data
         public void setIdNamePicture(String id, String name, String picture) {
             this.id = id;
             this.name = name;
