@@ -14,7 +14,7 @@ import java.util.Map;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.InterestingPlace;
 
 /**
- * Created by DoubleD on 2016. 12. 01..
+ * Connect to the locations table in the database.
  */
 
 public class Locations extends SQLiteOpenHelper{
@@ -64,6 +64,7 @@ public class Locations extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    // Insert a place to the database
     public void addPlace(InterestingPlace place){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues content = new ContentValues();
@@ -80,12 +81,14 @@ public class Locations extends SQLiteOpenHelper{
         db.close();
     }
 
+    // Insert more places to the database
     public void addPlaces(List<InterestingPlace> places){
         for (int i=0; i<places.size(); i++){
             addPlace(places.get(i));
         }
     }
 
+    // Get all places from the database
     public List<InterestingPlace> getPlaces(){
         List<InterestingPlace> places = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
@@ -111,6 +114,7 @@ public class Locations extends SQLiteOpenHelper{
         return places;
     }
 
+    // Get the places in the given categories
     public List<InterestingPlace> getPlacesInCategories(List<String> categories){
         List<InterestingPlace> places = new ArrayList<>();
         if (categories.size() == 0){
@@ -144,6 +148,7 @@ public class Locations extends SQLiteOpenHelper{
         return places;
     }
 
+    // Get the number of the places in the categories
     public Map<String, Integer> getCategoryCount(){
         Map<String, Integer> result = new HashMap<>();
         SQLiteDatabase db = this.getWritableDatabase();

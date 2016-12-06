@@ -13,14 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import fi.jamk.hunteam.explorejyvaskylaandroid.ManageSharedPreferences;
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
 import fi.jamk.hunteam.explorejyvaskylaandroid.database.Locations;
 import fi.jamk.hunteam.explorejyvaskylaandroid.database.Visits;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.Categories;
 
-/**
- * Created by DoubleD on 2016. 11. 29..
- */
+// The profile screen. Used by the Main Activity.
 
 public class ProfileFragment extends Fragment {
 
@@ -36,19 +35,28 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.activity_profile, container, false);
+        rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
         categories = new ArrayList<>();
         getData();
         setTitles();
-        setIcons();
+        setProfileFields();
         return rootView;
     }
 
+    // Set the fields based on the saved information from Google account
+    public void setProfileFields(){
+        TextView username = (TextView) rootView.findViewById(R.id.profile_username);
+        String name = new ManageSharedPreferences.Manager(getActivity()).getName();
+        username.setText(name);
+    }
 
+    // Get the number of the places and the number of the visited places in the categories
     public void getData(){
+        // all
         Locations locations = new Locations(getContext());
         Map<String, Integer> allCounts = locations.getCategoryCount();
+        // visited
         Visits visits = new Visits(getContext());
         Map<String, Integer> visitedCounts = visits.getCategoryCount();
 
@@ -61,6 +69,8 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    // Set the title TextViews on the layout
+    // Set the background of the category icons
     public void setTitles(){
         Categories categoriesInfo = new Categories();
         TextView goldTitles = (TextView) rootView.findViewById(R.id.gold_titles);
@@ -110,10 +120,8 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    public void setIcons(){
-
-    }
-
+    // Local model for the class
+    // Store the category and the number of places/visited places
     class Model {
 
         protected String category;

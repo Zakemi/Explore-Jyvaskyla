@@ -12,7 +12,7 @@ import java.util.Map;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.InterestingPlace;
 
 /**
- * Created by DoubleD on 2016. 12. 04..
+ * Connect to the visits table in the database.
  */
 
 public class Visits extends SQLiteOpenHelper {
@@ -48,6 +48,7 @@ public class Visits extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // The user have visited a place, save it in the database
     public void addVisitedPlaceToDatabase(InterestingPlace place){
         ContentValues contentValues = new ContentValues();
         contentValues.put(PLACE_ID, place.getId());
@@ -56,6 +57,7 @@ public class Visits extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Return true if the user have already visited a place
     public boolean isPlaceVisitedAlready(InterestingPlace place){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + PLACE_ID + " from " + TABLE
@@ -70,6 +72,7 @@ public class Visits extends SQLiteOpenHelper {
         }
     }
 
+    // Return the number of the visited places in the categories
     public Map<String, Integer> getCategoryCount(){
         Locations locations = new Locations(context);
         Map<String, Integer> result = new HashMap<>();

@@ -10,6 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+// Send a GET request to the server: /locations
+
 public class GetPlacesFromServer extends AsyncTask<Void, Void, String> {
 
     public interface GetPlacesCallBack{

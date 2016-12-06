@@ -106,9 +106,8 @@ app.post('/locations', function(req, res) {
             Name: 'string',
             Type: 'string'
         };
-
         try {
-            body = JSON.parse(body);
+            body = JSON.parse(decodeURIComponent(body));
         }
         catch(e) {
             console.log('Failed parsing JSON: ');
@@ -133,12 +132,14 @@ app.post('/locations', function(req, res) {
             res.send(JSON.stringify(response));
             return;
         }
-
+		console.log(body);
+		console.log(body.UserID);
         // Save location
-        sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type, Address, Phone, Web, GoogleID) ' +
-                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type, body.Address, body.Phone, body.Web, body.GoogleID],
+        sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type, Address, Phone, Web, GoogleID, UserID) ' +
+                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type, body.Address, body.Phone, body.Web, body.GoogleID, body.UserID],
              function(err, results) {
                  if(err) {
+					 console.log(err);
                      response = {
                          success: false,
                          error: 'query-fail'

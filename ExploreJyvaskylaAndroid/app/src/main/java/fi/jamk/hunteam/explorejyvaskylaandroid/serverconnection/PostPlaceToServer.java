@@ -2,6 +2,7 @@ package fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection;
 
 import android.os.AsyncTask;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,6 +14,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+
+import fi.jamk.hunteam.explorejyvaskylaandroid.ManageSharedPreferences;
 
 public class PostPlaceToServer extends AsyncTask<String, Void, String> {
 
@@ -46,8 +50,10 @@ public class PostPlaceToServer extends AsyncTask<String, Void, String> {
             jsonObject.put("Type", params[5]);
             jsonObject.put("Phone", params[6]);
             jsonObject.put("Web", params[7]);
+            jsonObject.put("UserID", params[8]);
 
-            String post_urlcoded = jsonObject.toString();
+            //String post_urlcoded = jsonObject.toString();
+            String post_urlcoded = URLEncoder.encode(jsonObject.toString(), "UTF-8");
             System.out.println(post_urlcoded);
 
             DataOutputStream outputStream = new DataOutputStream(httpURLConnection.getOutputStream());

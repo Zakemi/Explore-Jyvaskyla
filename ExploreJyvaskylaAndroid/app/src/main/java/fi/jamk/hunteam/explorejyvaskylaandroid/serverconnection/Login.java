@@ -13,9 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by DoubleD on 2016. 12. 05..
- */
+// Handle the login process. Send the user's idToken (from Google) and receive user data
 
 public class Login extends AsyncTask<String, Void, String> {
 

@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by DoubleD on 2016. 12. 02..
- */
+// Model for the categories. They are created only here.
 
 public class Categories {
 
     Map<String, Category> categories;
 
+    // Create the categories with the titles
     public Categories(){
         categories = new HashMap<>();
         categories.put("museum", new Category("museum", "Knower of the Past", "Researcher of the Past", "Interested in the Past"));
@@ -24,6 +23,7 @@ public class Categories {
         categories.put("other", new Category("other", "other gold", "other silver", "other bronze"));
     }
 
+    // Return the name of the categories in a sorted list
     public List<String> getCategoryNames(){
         Set<String> set =  categories.keySet();
         List<String> result = new ArrayList<>(set);
@@ -31,18 +31,22 @@ public class Categories {
         return result;
     }
 
+    // Return the gold title of a category
     public String getGoldTitleByName(String name){
         return categories.get(name).getGoldTitle();
     }
 
+    // Return the silver title of a category
     public String getSilverTitleByName(String name){
         return categories.get(name).getSilverTitle();
     }
 
+    // Return the bronze title of a category
     public String getBronzeTitleByName(String name){
         return categories.get(name).getBronzeTitle();
     }
 
+    // Model for a single category
     public static class Category {
         private String name;
         private String goldTitle;
