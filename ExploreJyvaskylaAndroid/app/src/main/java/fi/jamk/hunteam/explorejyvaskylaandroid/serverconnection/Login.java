@@ -68,7 +68,7 @@ public class Login extends AsyncTask<String, Void, String> {
             String name = jsonObject.getString("Name");
             String picture = jsonObject.getString("Picture");
             loginCallBack.onRemoteCallComplete(id, name, picture);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             loginCallBack.onRemoteCallComplete(null, null, null);
             e.printStackTrace();
         }

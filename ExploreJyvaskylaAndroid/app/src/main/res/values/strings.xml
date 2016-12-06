@@ -3,4 +3,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="please_select">Please select…</string>
     <string name="rank_place">Rank the place</string>
+    <string name="sign_in">Please sign in with your\nGoogle Account</string>
+    <string name="login_wait_for_server">Waiting for the server...</string>
 </resources>

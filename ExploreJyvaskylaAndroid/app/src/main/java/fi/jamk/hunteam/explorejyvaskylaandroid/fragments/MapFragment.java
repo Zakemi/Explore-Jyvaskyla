@@ -198,6 +198,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                             .position(userLocation)
                             .title("You are here")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.user2))
+                            .zIndex(1.0f)
                     );
                 }
                 else {

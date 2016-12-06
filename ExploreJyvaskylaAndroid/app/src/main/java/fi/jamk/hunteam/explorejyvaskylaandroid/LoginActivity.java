@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -59,7 +60,9 @@ public class LoginActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                signIn();
+                TextView status = (TextView) findViewById(R.id.sign_in_status);
+                if (!status.getText().equals(getResources().getString(R.string.login_wait_for_server)))
+                    signIn();
                 break;
             // ...
         }
@@ -89,9 +92,12 @@ public class LoginActivity extends AppCompatActivity implements
             String idToken = acct.getIdToken();
             // Send id token to server
             new Login(this).execute(idToken);
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Waiting for the server...");
         } else {
             // Signed out, show unauthenticated UI.
-
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Something happened during the process.\nPlease try again.");
         }
     }
 
@@ -109,11 +115,15 @@ public class LoginActivity extends AppCompatActivity implements
     public void onRemoteCallComplete(String id, String name, String picture) {
         System.out.println("____ Received id: " + id);
         if (id != null){
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Successful login.\nStart the application...");
             // Save login data and start MainActivity
             new ManageSharedPreferences.Manager(this).setIdNamePicture(id, name, picture);
             isUserLoggedIn();
         } else {
-            Toast.makeText(this, "Login failed, please try again", Toast.LENGTH_LONG).show();
+
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Login failed.\nPlease try again.");
         }
     }
 }
