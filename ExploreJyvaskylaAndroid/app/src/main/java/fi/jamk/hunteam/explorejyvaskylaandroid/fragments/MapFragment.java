@@ -1,6 +1,11 @@
 package fi.jamk.hunteam.explorejyvaskylaandroid.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -11,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,20 +39,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fi.jamk.hunteam.explorejyvaskylaandroid.ManageSharedPreferences;
 import fi.jamk.hunteam.explorejyvaskylaandroid.model.InterestingPlace;
 import fi.jamk.hunteam.explorejyvaskylaandroid.R;
 import fi.jamk.hunteam.explorejyvaskylaandroid.database.Locations;
 import fi.jamk.hunteam.explorejyvaskylaandroid.database.Visits;
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.GetPlacesFromServer;
+import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.PostRating;
 
 
-public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack {
+public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlacesCallBack, GoogleMap.OnInfoWindowClickListener {
 
     private Context context;
     private MapView mMapView;
     private GoogleMap googleMap;
     private Marker userMarker;
     private Map<Marker, InterestingPlace> placeMarkersAndData;
+    private Marker selectedMarker;
     private List<InterestingPlace> interestingPlaces;
     private double epsilonLatLng = 0.001;
     private Locations locationsDatabase;
@@ -81,17 +90,44 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLocation, 14.0f));
+                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        System.out.println("____ onInfoWindowClick");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        LayoutInflater inflater = (LayoutInflater)context.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
+                        View v = inflater.inflate(R.layout.dialog_rank_place, null);
+                        RatingBar ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
+                        builder.setTitle(R.string.rank_place)
+                                .setView(v)
+                                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        RatingBar ratingBar = (RatingBar) ((AlertDialog) dialog).findViewById(R.id.ratingBar);
+                                        sendRating(ratingBar.getRating());
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // what?
+                                    }
+                                })
+                                .create().show();
+                    }
+                });
                 getInterestingPlaces();
                 getUserLocation();
-
-                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                     @Override
                     public View getInfoWindow(Marker marker) {
+                        selectedMarker = marker;
                         View view = getActivity().getLayoutInflater().inflate(R.layout.infowindow, null);
                         TextView name = (TextView) view.findViewById(R.id.info_name);
                         TextView address = (TextView) view.findViewById(R.id.info_address);
                         TextView phone = (TextView) view.findViewById(R.id.info_phone);
                         TextView web = (TextView) view.findViewById(R.id.info_web);
+                        RatingBar rate = (RatingBar) view.findViewById(R.id.info_rate);
                         InterestingPlace place = placeMarkersAndData.get(marker);
                         if (place != null){
                             if (!place.getName().equals("null") && !place.getName().equals(""))
@@ -113,6 +149,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                                 web.setText(place.getWeb());
                             else
                                 web.setVisibility(View.GONE);
+                            rate.setRating(place.getRate().floatValue());
                         }else if (marker.getPosition().longitude == userMarker.getPosition().longitude &&
                                 marker.getPosition().latitude == userMarker.getPosition().latitude){
                             name.setText("You");
@@ -131,9 +168,18 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
             }
         });
 
-
-
         return rootView;
+    }
+
+    public void sendRating(float rating){
+        // send to server
+        String id = new ManageSharedPreferences.Manager(getContext()).getId();
+        InterestingPlace place = placeMarkersAndData.get(selectedMarker);
+        System.out.println(place.getId());
+        Integer placeId = place.getId();
+        new PostRating().execute(id, placeId, rating);
+        // thanks to the user
+        Toast.makeText(getContext(), "Thanks for the rating!", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -152,6 +198,7 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                             .position(userLocation)
                             .title("You are here")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.user2))
+                            .zIndex(1.0f)
                     );
                 }
                 else {
@@ -244,7 +291,8 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
                 String address = jsonObject.getString("Address");
                 String phone = jsonObject.getString("Phone");
                 String web = jsonObject.getString("Web");
-                InterestingPlace place = new InterestingPlace(id, name, lat, lng, type, address, phone, web);
+                Double rate = jsonObject.getDouble("Rate");
+                InterestingPlace place = new InterestingPlace(id, name, lat, lng, type, address, phone, web, rate);
                 interestingPlaces.add(place);
             }
         } catch (JSONException e) {
@@ -301,5 +349,11 @@ public class MapFragment extends Fragment implements GetPlacesFromServer.GetPlac
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+
     }
 }

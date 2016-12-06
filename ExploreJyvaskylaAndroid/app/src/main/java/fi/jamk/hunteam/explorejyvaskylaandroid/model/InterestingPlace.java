@@ -20,8 +20,10 @@ public class InterestingPlace {
     private String address;
     private String phone;
     private String web;
+    private Double rate;
 
-    public InterestingPlace(int _id, String _name, double _lat, double _lng, String _type, String _address, String _phone, String _web){
+    public InterestingPlace(int _id, String _name, double _lat, double _lng, String _type,
+                            String _address, String _phone, String _web, Double _rate){
         id = _id;
         name = _name;
         position = new LatLng(_lat, _lng);
@@ -29,6 +31,7 @@ public class InterestingPlace {
         address = _address;
         phone = _phone;
         web = _web;
+        rate = _rate;
     }
 
     public LatLng getPosition() {
@@ -57,5 +60,9 @@ public class InterestingPlace {
 
     public String getWeb() {
         return web;
+    }
+
+    public Double getRate() {
+        return rate;
     }
 }

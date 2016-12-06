@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -17,6 +18,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.Login;
 
+import static android.R.attr.id;
+
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener,
@@ -24,7 +27,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 1;
-    public static final String PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,9 @@ public class LoginActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                signIn();
+                TextView status = (TextView) findViewById(R.id.sign_in_status);
+                if (!status.getText().equals(getResources().getString(R.string.login_wait_for_server)))
+                    signIn();
                 break;
             // ...
         }
@@ -88,16 +92,18 @@ public class LoginActivity extends AppCompatActivity implements
             String idToken = acct.getIdToken();
             // Send id token to server
             new Login(this).execute(idToken);
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Waiting for the server...");
         } else {
             // Signed out, show unauthenticated UI.
-
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Something happened during the process.\nPlease try again.");
         }
     }
 
     public void isUserLoggedIn(){
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        String id = settings.getString("Id", "");
+        String id = new ManageSharedPreferences.Manager(this).getId();
         if (!id.equals("")){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -109,17 +115,15 @@ public class LoginActivity extends AppCompatActivity implements
     public void onRemoteCallComplete(String id, String name, String picture) {
         System.out.println("____ Received id: " + id);
         if (id != null){
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Successful login.\nStart the application...");
             // Save login data and start MainActivity
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString("Id", id);
-            editor.putString("Name", name);
-            editor.putString("Picture", picture);
-            // Commit the edits!
-            editor.commit();
+            new ManageSharedPreferences.Manager(this).setIdNamePicture(id, name, picture);
             isUserLoggedIn();
         } else {
-            Toast.makeText(this, "Login failed, please try again", Toast.LENGTH_LONG).show();
+
+            TextView status = (TextView) findViewById(R.id.sign_in_status);
+            status.setText("Login failed.\nPlease try again.");
         }
     }
 }

@@ -37,4 +37,15 @@
         android:id="@+id/info_phone"
         android:textColor="@color/colorSecondaryText" />
 
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/info_rate"
+        android:numStars="5"
+        android:isIndicator="true"
+        android:theme="@style/OwnRatingBar"
+        android:rating="0"
+        android:layout_centerHorizontal="true"
+        android:stepSize="0.1" />
+
 </LinearLayout>

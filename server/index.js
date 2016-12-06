@@ -27,15 +27,13 @@ function json_validate(scheme, data) {
 }
 
 app.get('/locations', function(req, res) {
-	console.log("Locations request");
-    sql.query('SELECT * FROM locations', function(err, rows, fields) {
+    sql.query('SELECT l.*, Coalesce( Avg( r.Rating ), 0 ) As Rate FROM locations l LEFT JOIN rating r ON l.ID=r.PlaceID group by l.ID', function(err, rows, fields) {
         if(err) {
             console.log('Locations query fail!', err);
             res.statusCode = 500;
             res.send('Query fail!');
             return;
         }
-
         res.send(JSON.stringify(rows));
     });
 });
@@ -139,6 +137,72 @@ app.post('/locations', function(req, res) {
         // Save location
         sql.query('INSERT INTO locations (Name, Latitude, Longitude, Type, Address, Phone, Web, GoogleID) ' +
                  'VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [body.Name, body.Latitude, body.Longitude, body.Type, body.Address, body.Phone, body.Web, body.GoogleID],
+             function(err, results) {
+                 if(err) {
+                     response = {
+                         success: false,
+                         error: 'query-fail'
+                     };
+                 } else {
+                     response = {
+                         success: true
+                     };
+                 }
+
+                 res.send(JSON.stringify(response));
+             });
+    });
+});
+
+app.post('/rate', function(req, res) {
+    var body = [];
+
+    // Receive data chunk by chunk
+    req.on('error', function(err) {
+        console.log(err);
+    }).on('data', function(chunk) {
+        body.push(chunk);
+    }).on('end', function() {
+        body = Buffer.concat(body).toString();
+        req.emit('buffer-complete');
+    }).on('buffer-complete', function() {
+        // Handle request
+        var scheme = {
+            UserId: 'string',
+            PlaceId: 'integer',
+            Rating: 'integer'
+        };
+
+        try {
+            body = JSON.parse(body);
+        }
+        catch(e) {
+            console.log('Failed parsing JSON: ');
+            console.log(e.message);
+            res.send(JSON.stringify({
+                success: false,
+                error: 'malformed-json'
+            }));
+        }
+        
+        var response = {};
+
+        // Validate req body
+        // ( i.e. see if it has all the required fields )
+        if(!json_validate(scheme, body)) {
+            res.statusCode = 400;
+            response = {
+                success: false,
+                error: 'bad-json'
+            }
+
+            res.send(JSON.stringify(response));
+            return;
+        }
+
+        // Save rating
+        sql.query('INSERT INTO rating (UserId, PlaceId, Rating) ' +
+                 'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Rating=?', [body.UserId, body.PlaceId, body.Rating, body.Rating],
              function(err, results) {
                  if(err) {
                      response = {
