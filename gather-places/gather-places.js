@@ -79,7 +79,8 @@ class PageGetter extends EventEmitter {
                     Name: place.name,
                     Latitude: place.geometry.location.lat,
                     Longitude: place.geometry.location.lng,
-                    Type: place.types
+                    Type: place.types,
+                    GoogleID: place.id
                 });
             }
 
@@ -114,6 +115,20 @@ getter.get(url).on('page', (new_places, next_page_token) => {
     console.log('Got', places.length, 'results');
     for(var i = 0; i < places.length; i+=1) {
         let place = places[i];
-        console.log('\t', place.Name, '@', place.Latitude, place.Longitude, '-', place.Type[0]);
+        console.log('\t', [place.GoogleID, place.Name, place.Latitude, place.Longitude, place.Type[0]].join(','));
     }
+
+    // Gather unique types
+    var uniqueTypes = {};
+    for(var i = 0; i < places.length; i+=1) {
+        let place = places[i];
+        let types = place.Type;
+
+        for(var j = 0; j < types.length; j+=1)
+            uniqueTypes[types[j]] = true;
+    }
+
+    console.log('Unique types: ');
+    for(var t in uniqueTypes)
+        console.log('\t', t);
 })
