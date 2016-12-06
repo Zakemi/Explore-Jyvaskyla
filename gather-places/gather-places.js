@@ -153,6 +153,7 @@ getter.get(url).on('page', (new_places, next_page_token) => {
 
     // Output places for debug
     console.log('Got', places.length, 'results');
+    console.log('\tGoogleID,Name,Latitude,Longitude,Type');
     for(var i = 0; i < places.length; i+=1) {
         let place = places[i];
         console.log('\t', [place.GoogleID, place.Name, place.Latitude, place.Longitude, place.Type].join(','));
