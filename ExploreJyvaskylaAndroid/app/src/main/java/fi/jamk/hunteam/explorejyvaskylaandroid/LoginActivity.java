@@ -17,6 +17,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import fi.jamk.hunteam.explorejyvaskylaandroid.serverconnection.Login;
 
+import static android.R.attr.id;
+
 public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener,
@@ -24,7 +26,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 1;
-    public static final String PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +97,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     public void isUserLoggedIn(){
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        String id = settings.getString("Id", "");
+        String id = new ManageSharedPreferences.Manager(this).getId();
         if (!id.equals("")){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -110,13 +110,7 @@ public class LoginActivity extends AppCompatActivity implements
         System.out.println("____ Received id: " + id);
         if (id != null){
             // Save login data and start MainActivity
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString("Id", id);
-            editor.putString("Name", name);
-            editor.putString("Picture", picture);
-            // Commit the edits!
-            editor.commit();
+            new ManageSharedPreferences.Manager(this).setIdNamePicture(id, name, picture);
             isUserLoggedIn();
         } else {
             Toast.makeText(this, "Login failed, please try again", Toast.LENGTH_LONG).show();

@@ -31,6 +31,7 @@ public class Locations extends SQLiteOpenHelper{
     public static final String ADDRESS = "Address";
     public static final String PHONE = "Phone";
     public static final String WEB = "Web";
+    public static final String RATE = "Rate";
 
     public Locations(Context context) {
         super(context, DATABASE, null, 1);
@@ -52,7 +53,8 @@ public class Locations extends SQLiteOpenHelper{
             + TYPE + " TEXT, "
             + ADDRESS + " TEXT, "
             + PHONE + " TEXT, "
-            + WEB + " TEXT);"
+            + WEB + " TEXT, "
+            + RATE + " REAL);"
         );
     }
 
@@ -73,6 +75,7 @@ public class Locations extends SQLiteOpenHelper{
         content.put(ADDRESS, place.getAddress());
         content.put(PHONE, place.getPhone());
         content.put(WEB, place.getWeb());
+        content.put(RATE, place.getRate());
         db.insert(TABLE, null, content);
         db.close();
     }
@@ -98,7 +101,8 @@ public class Locations extends SQLiteOpenHelper{
                     cursor.getString(cursor.getColumnIndex(TYPE)),
                     cursor.getString(cursor.getColumnIndex(ADDRESS)),
                     cursor.getString(cursor.getColumnIndex(PHONE)),
-                    cursor.getString(cursor.getColumnIndex(WEB))
+                    cursor.getString(cursor.getColumnIndex(WEB)),
+                    cursor.getDouble(cursor.getColumnIndex(RATE))
             );
             places.add(place);
             cursor.moveToNext();
@@ -130,7 +134,8 @@ public class Locations extends SQLiteOpenHelper{
                     cursor.getString(cursor.getColumnIndex(TYPE)),
                     cursor.getString(cursor.getColumnIndex(ADDRESS)),
                     cursor.getString(cursor.getColumnIndex(PHONE)),
-                    cursor.getString(cursor.getColumnIndex(WEB))
+                    cursor.getString(cursor.getColumnIndex(WEB)),
+                    cursor.getDouble(cursor.getColumnIndex(RATE))
             );
             places.add(place);
             cursor.moveToNext();
