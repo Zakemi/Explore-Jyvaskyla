@@ -4,6 +4,46 @@ const EventEmitter = require('events');
 
 const API_KEY = "AIzaSyDd3X275fD1ZBotmfU52iDTPSmfAjaZO9M";
 
+function determineTypeFromGoogle(types) {
+    // TypeMap[GoogleType] -> CustomType
+    const TypeMap = {
+        'amusement park': 'entertainment',
+        'bowling alley': 'entertainment',
+        'zoo': 'entertainment',
+
+        'museum': 'museum',
+        'art gallery': 'museum',
+
+        'bakery': 'bakery',
+
+        'bar': 'bar',
+        'casino': 'bar',
+
+        'cafe': 'cafe',
+
+        'church': 'church',
+
+        'nature': 'natural feature',
+
+        'park': 'park',
+        'camp ground': 'park',
+
+        'health': 'health',
+        'gym': 'health'
+    };
+
+    for(let i = 0; i < types.length; i+=1) {
+        let type = types[i];
+        for(let t in TypeMap)
+            if(t == type)
+                return TypeMap[t];
+    }
+
+    console.log('Couldn\'t map type array:', types);
+
+    return 'other';
+}
+
 function assembleUrl(base, options) {
     var postfix = [];
     for(var attrib in options)
@@ -79,7 +119,7 @@ class PageGetter extends EventEmitter {
                     Name: place.name,
                     Latitude: place.geometry.location.lat,
                     Longitude: place.geometry.location.lng,
-                    Type: place.types,
+                    Type: determineTypeFromGoogle(place.types),
                     GoogleID: place.id
                 });
             }
@@ -115,7 +155,7 @@ getter.get(url).on('page', (new_places, next_page_token) => {
     console.log('Got', places.length, 'results');
     for(var i = 0; i < places.length; i+=1) {
         let place = places[i];
-        console.log('\t', [place.GoogleID, place.Name, place.Latitude, place.Longitude, place.Type[0]].join(','));
+        console.log('\t', [place.GoogleID, place.Name, place.Latitude, place.Longitude, place.Type].join(','));
     }
 
     // Gather unique types
@@ -123,9 +163,7 @@ getter.get(url).on('page', (new_places, next_page_token) => {
     for(var i = 0; i < places.length; i+=1) {
         let place = places[i];
         let types = place.Type;
-
-        for(var j = 0; j < types.length; j+=1)
-            uniqueTypes[types[j]] = true;
+        uniqueTypes[place.Type] = true;
     }
 
     console.log('Unique types: ');
