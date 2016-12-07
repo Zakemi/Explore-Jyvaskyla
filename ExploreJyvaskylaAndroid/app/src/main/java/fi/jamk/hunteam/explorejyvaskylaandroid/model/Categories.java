@@ -23,7 +23,7 @@ public class Categories {
         categories.put("entertainment", new Category("entertainment", "Eternal Child", "On the Move", "Playful"));
         categories.put("bar", new Category("bar", "Just one more beer", "Makes Friends in bar", "Bar visitor"));
         categories.put("bakery", new Category("bakery", "Pulla Lover", "Cookies researcher", "Sweet-toothed"));
-        categories.put("food", new Category("food", "Chow Hound", "Globbler", "Hungry"));
+        categories.put("food", new Category("food", "Chow Hound", "Gobbler", "Hungry"));
         categories.put("other", new Category("other", "Unkonwn Knower", "Going to Unusual Places", "Dissatisfied with the Known"));
         categories.put("nature", new Category("nature", "Hippy", "Nature-Lover", "Touring"));
         categories.put("park", new Category("park", "Park-ing", "Sitting on bench", "Park finder"));
